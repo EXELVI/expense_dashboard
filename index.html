@@ -514,12 +514,12 @@
                 }
                 const config = { //The config for the chart
                     type: "line", //The type of the chart
-                    data: { 
+                    data: {
                         datasets: datasets, //The datasets
                     },
                     options: {
-                        scales: { 
-                            y: { 
+                        scales: {
+                            y: {
                                 beginAtZero: true, //Start the y-axis at 0
                             },
                             xAxes: {
@@ -532,17 +532,17 @@
                         interaction: {
                             beforeTitle: "Expenses", //The title of the tooltip
                         },
-                        responsive: true, 
-                        plugins: { 
-                            tooltip: { 
-                                callbacks: { 
-                                    label: function (context) { 
+                        responsive: true,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
                                         let label = context.dataset.label || "";  //The label of the dataset
 
-                                        if (label) { 
+                                        if (label) {
                                             label += ": "; //Add a colon to the label
                                         }
-                                        if (context.parsed.y !== null) { 
+                                        if (context.parsed.y !== null) {
                                             label += context.parsed.y.toFixed(2) + "€"; //Add the amount to the label with 2 decimal places
                                         }
                                         return label; //Return the label
@@ -558,25 +558,21 @@
                 resizeCanvas(); //Resize the canvas 
             }
 
-            function displayExpense() { 
-                const currentCat = categories.filter(
-                    (c) => c.name === currentCategory
-                )[0];
-                expenseList.innerHTML = "";
-                totalAmount = 0;
+            /**
+             * Display the expenses of the current category
+             * @returns {void}
+             */
+            function displayExpense() {
+                const currentCat = categories.filter((c) => c.name === currentCategory)[0]; //Get the current category
+                expenseList.innerHTML = ""; //Clear the table
+                totalAmount = 0; //Reset the total amount
 
                 currentCat.expenses
-                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .sort((a, b) => new Date(b.date) - new Date(a.date)) //Sort the expenses by date
                     .forEach((exp) => {
-                        const color = categories.filter(
-                            (cat) => cat.name === exp.category
-                        )[0].color
-                            ? categories.filter((cat) => cat.name === exp.category)[0].color
-                            : getComputedStyle(document.body).getPropertyValue(
-                                `--bs-primary`
-                            );
-                        const tr = document.createElement("tr");
-                        tr.innerHTML = `
+                        const color = categories.filter((cat) => cat.name === exp.category)[0].color ? categories.filter((cat) => cat.name === exp.category)[0].color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`); //Get the color of the category
+                        const tr = document.createElement("tr"); //Create a new table row
+                        tr.innerHTML = ` 
                         <td>${exp.name}</td>
                         <td><span class="badge bg-${exp.amount > 0 ? "danger" : "success"
                             }">${exp.amount.toFixed(2)}€</span></td>
@@ -588,48 +584,39 @@
                             <button class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
-                    `;
-                        tr.querySelector("button.btn-danger").addEventListener(
-                            "click",
-                            () => {
-                                const response = modalConfirm(
-                                    "Delete Expense",
-                                    `Are you sure you want to delete the expense? <br> <strong>${exp.name
-                                    } - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? "" : ` - ${exp.category}`
-                                    }</strong>`
-                                );
-                                response.then((result) => {
-                                    if (result) {
-                                        categories = categories.map((cat) => {
-                                            if (cat.name === exp.category) {
-                                                cat.expenses = cat.expenses.filter((e) => e !== exp);
-                                            }
-                                            return cat;
-                                        });
+                    `; //Add the expense to the table
 
-                                        updateAllCat();
-                                        updateCurrentCategory(currentCategory);
-                                        localStorage.setItem(
-                                            "expenses",
-                                            JSON.stringify(
-                                                categories.filter((cat) => cat.name !== "all")
-                                            )
-                                        );
-                                    }
-                                });
-                            }
+                        tr.querySelector("button.btn-danger").addEventListener("click", () => { //When the user clicks on the delete button
+                            const response = modalConfirm("Delete Expense", `Are you sure you want to delete the expense? <br> <strong>${exp.name} - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? "" : ` - ${exp.category}`}</strong>`); //Ask the user if they are sure they want to delete the expense
+                            response.then((result) => { //When the user clicks on the "Ok" or "Cancel" button
+                                if (result) { //If the user clicks on the "Ok" button
+                                    categories = categories.map((cat) => { //Map over the categories
+                                        if (cat.name === exp.category) { //If the category is the same as the category of the expense
+                                            cat.expenses = cat.expenses.filter((e) => e !== exp); //Remove the expense from the category
+                                        }
+                                        return cat; //Return the category
+                                    });
+
+                                    updateAllCat(); //Update the "all" category
+                                    updateCurrentCategory(currentCategory); //Update the current category
+                                    localStorage.setItem("expenses", JSON.stringify(categories.filter((cat) => cat.name !== "all") //Save the categories to the local storage
+                                    )
+                                    );
+                                }
+                            });
+                        }
                         );
 
-                        function changeItem() {
-                            var inputDiv = document.createElement("div");
-                            var inputName = document.createElement("input");
-                            inputName.type = "text";
-                            inputName.defaultValue = exp.name;
-                            inputName.className = "form-control mb-2";
-                            inputName.placeholder = "Expense Name";
-                            inputDiv.appendChild(inputName);
+                        function changeItem() { //Function to change the expense
+                            var inputDiv = document.createElement("div"); //Create a new div
+                            var inputName = document.createElement("input"); //Create a new input for the name
+                            inputName.type = "text"; //Set the type of the input to text
+                            inputName.defaultValue = exp.name; //Set the default value of the input to the name of the expense
+                            inputName.className = "form-control mb-2"; //Add the class "form-control" to the input
+                            inputName.placeholder = "Expense Name"; //Set the placeholder of the input
+                            inputDiv.appendChild(inputName); //Add the input to the div
 
-                            var inputAmount = document.createElement("input");
+                            var inputAmount = document.createElement("input"); //Same as above but for the amount
                             inputAmount.type = "number";
                             inputAmount.defaultValue = exp.amount;
                             inputAmount.step = "0.01";
@@ -637,56 +624,41 @@
                             inputAmount.placeholder = "Amount";
                             inputDiv.appendChild(inputAmount);
 
-                            var inputDate = document.createElement("input");
+                            var inputDate = document.createElement("input"); //Same as above but for the date
                             inputDate.type = "date";
                             inputDate.defaultValue = exp.date;
                             inputDate.className = "form-control mb-2";
                             inputDiv.appendChild(inputDate);
 
-                            var selectCategory = document.createElement("select");
-                            selectCategory.className = "form-select mb-2";
+                            var selectCategory = document.createElement("select"); //Create a new select for the category
+                            selectCategory.className = "form-select mb-2"; //Add the class "form-select" to the select
                             categories
-                                .filter((cat) => cat.name !== "all")
-                                .sort((a, b) => (a.name == exp.category ? -1 : 1))
-                                .forEach((cat) => {
-                                    const option = document.createElement("option");
-                                    option.value = cat.name;
-                                    option.innerText = cat.name;
-                                    selectCategory.appendChild(option);
+                                .filter((cat) => cat.name !== "all") //Filter out the "all" category 
+                                .sort((a, b) => (a.name == exp.category ? -1 : 1)) //Sort the categories by name
+                                .forEach((cat) => { //For each category
+                                    const option = document.createElement("option"); //Create a new option
+                                    option.value = cat.name; //Set the value of the option to the name of the category
+                                    option.innerText = cat.name; //Set the inner text of the option to the name of the category
+                                    selectCategory.appendChild(option); //Add the option to the select
                                 });
-                            inputDiv.appendChild(selectCategory);
+                            inputDiv.appendChild(selectCategory); //Add the select to the div
 
-                            const response = modalConfirm(
-                                "Edit Expense",
-                                inputDiv.innerHTML
-                            );
+                            const response = modalConfirm("Edit Expense", inputDiv.innerHTML); //Ask the user if they are sure they want to edit the expense
                             response.then((result) => {
                                 if (result) {
-                                    const newName = document.querySelector(
-                                        '#modalConfirm input[placeholder="Expense Name"]'
-                                    ).value;
-                                    const newAmount = parseFloat(
-                                        document.querySelector(
-                                            '#modalConfirm input[placeholder="Amount"]'
-                                        ).value
-                                    );
-                                    const newDate = document.querySelector(
-                                        '#modalConfirm input[type="date"]'
-                                    ).value;
-                                    const newCategory = document.querySelector(
-                                        "#modalConfirm select"
-                                    ).value;
-                                    if (newName && !isNaN(newAmount) && newDate) {
-                                        //if category changed, remove from current category and add to new category
-                                        if (newCategory !== exp.category) {
+                                    const newName = document.querySelector('#modalConfirm input[placeholder="Expense Name"]').value; //Get the new name of the expense, by selecting the input with the placeholder "Expense Name"
+                                    const newAmount = parseFloat(document.querySelector('#modalConfirm input[placeholder="Amount"]').value);
+                                    const newDate = document.querySelector('#modalConfirm input[type="date"]').value; //Get the new date of the expense, by selecting the input with the type "date"
+                                    const newCategory = document.querySelector("#modalConfirm select").value; //Get the new category of the expense, by selecting the select
+                                    if (newName && !isNaN(newAmount) && newDate) { //Check if the new name is not empty, the new amount is a number and the new date is not empty
+                                        //if category changed, remove from current category and add to new category 
+                                        if (newCategory !== exp.category) {  //If the new category is different from the category of the expense
                                             categories = categories.map((cat) => {
                                                 if (cat.name === exp.category) {
-                                                    cat.expenses = cat.expenses.filter(
-                                                        (e) => e !== exp
-                                                    );
+                                                    cat.expenses = cat.expenses.filter((e) => e !== exp); //Remove the expense from the category
                                                 }
-                                                if (cat.name === newCategory) {
-                                                    cat.expenses.push({
+                                                if (cat.name === newCategory) { //If the category of the expense is the same as the new category
+                                                    cat.expenses.push({ //Add the new expense to the category 
                                                         name: newName,
                                                         amount: newAmount,
                                                         date: newDate,
@@ -699,7 +671,7 @@
                                             categories = categories.map((cat) => {
                                                 if (cat.name === exp.category) {
                                                     cat.expenses = cat.expenses.map((e) => {
-                                                        if (e === exp) {
+                                                        if (e === exp) { //If is the expense that we want to change
                                                             e.name = newName;
                                                             e.amount = newAmount;
                                                             e.date = newDate;
@@ -711,38 +683,28 @@
                                             });
                                         }
                                         updateAllCat();
-                                        updateCurrentCategory(currentCategory);
-                                        localStorage.setItem(
-                                            "expenses",
-                                            JSON.stringify(
-                                                categories.filter((cat) => cat.name !== "all")
-                                            )
-                                        );
-                                        tr.querySelector(
-                                            "button.btn-primary"
-                                        ).removeEventListener("click", changeItem);
+                                        updateCurrentCategory(currentCategory); //Update the current category, to display the changes
+                                        localStorage.setItem("expenses", JSON.stringify(categories.filter((cat) => cat.name !== "all"))); //Save the categories to the local storage
+                                        tr.querySelector("button.btn-primary").removeEventListener("click", changeItem); //Remove the event listener to avoid adding multiple event listeners
                                     }
                                 }
                             });
                         }
 
-                        tr.querySelector("button.btn-primary").addEventListener(
-                            "click",
-                            changeItem
-                        );
+                        tr.querySelector("button.btn-primary").addEventListener("click", changeItem); //When the user clicks on the edit button
 
-                        expenseList.appendChild(tr);
-                        totalAmount += exp.amount;
+                        expenseList.appendChild(tr); //Add the table row to the table
+                        totalAmount += exp.amount; //Add the amount of the expense to the total amount
                     });
                 updateTotal();
             }
 
-            expenseForm.addEventListener("submit", (e) => {
-                e.preventDefault();
-                const name = expenseNameInput.value;
-                const amount = parseFloat(expenseAmountInput.value);
+            expenseForm.addEventListener("submit", (e) => { //When clicks add expense
+                e.preventDefault(); //Prevent the default behavior of the form
+                const name = expenseNameInput.value;  //Get the value of the name input
+                const amount = parseFloat(expenseAmountInput.value); //Get the value of the amount input
                 const date = expenseDateInput.value; // yyyy-mm-dd
-                if (name && !isNaN(amount) && date) {
+                if (name && !isNaN(amount) && date) { //Check if the name is not empty, the amount is a number and the date is not empty
                     const newExpense = {
                         name,
                         amount,
@@ -751,16 +713,13 @@
                     };
                     categories = categories.map((cat) => {
                         if (cat.name === currentCategory) {
-                            cat.expenses.push(newExpense);
+                            cat.expenses.push(newExpense); //Add the new expense to the current category
                         }
                         return cat;
                     });
                     updateAllCat();
                     updateCurrentCategory(currentCategory);
-                    localStorage.setItem(
-                        "expenses",
-                        JSON.stringify(categories.filter((cat) => cat.name !== "all"))
-                    );
+                    localStorage.setItem("expenses", JSON.stringify(categories.filter((cat) => cat.name !== "all")));
                     expenseNameInput.value = "";
                     expenseAmountInput.value = "";
                 }
@@ -779,22 +738,31 @@
                 }
                 */
 
-            const savedExpenses = JSON.parse(localStorage.getItem("expenses"));
+            const savedExpenses = JSON.parse(localStorage.getItem("expenses")); //Get the expenses from the local storage
 
-            if (savedExpenses) {
-                categories.push(...savedExpenses);
+            if (savedExpenses) { //If there are expenses in the local storage
+                categories.push(...savedExpenses);  //Add the expenses to the categories
             }
 
-            function updateAllCat() {
-                var catt = categories.filter((cat) => cat.name === "all")[0];
-                catt.expenses = [];
-                categories.forEach((cat) => {
+            /**
+             * Update the All category with all the expenses from the other categories
+             * @returns {void}
+             * */
+            function updateAllCat() { //Function to update the "all" category
+                var catt = categories.filter((cat) => cat.name === "all")[0]; //Get the "all" category
+                catt.expenses = []; //Clear the expenses of the "all" category
+                categories.forEach((cat) => { //For each category
                     if (cat.name !== "all") {
-                        catt.expenses.push(...cat.expenses);
+                        catt.expenses.push(...cat.expenses); //Add the expenses of the category to the "all" category
                     }
                 });
             }
 
+            /**
+             * Convert a hex color to RGB
+             * @param {string} hex - The hex color to convert
+             * @returns {number[]} - An array with the RGB values
+             */
             function toRGB(hex) {
                 var bigint = parseInt(hex.replace("#", ""), 16);
                 var r = (bigint >> 16) & 255;
@@ -804,65 +772,69 @@
                 return [r, g, b];
             }
 
+            /**
+             * Determine the text color based on the background color
+             * @param {string} hex - The hex color of the background
+             * @returns {string} - The color of the text
+             */
             function determineTextColor(hex) {
-                const rgb = toRGB(hex);
-                const brightness = Math.round(
-                    (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
-                );
-                return brightness > 125 ? "black" : "white";
+                const rgb = toRGB(hex); //Convert the hex color to RGB
+                const brightness = Math.round((rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000); //Calculate the brightness of the color
+                return brightness > 125 ? "black" : "white"; //If the brightness is greater than 125, return "black", otherwise return "white"
             }
 
+            /**
+             * Adjust the color of the category based on the theme to prevent unreadable text
+             * @param {string} hex - The hex color of the category
+             * @returns {string} - The adjusted color
+             */
             function adjustColor(hex) {
-                //Function to adjust the color of the category based on theme, if it is too dark or too light
-                const theme = localStorage.getItem("theme");
-                const rgb = toRGB(hex);
-                const brightness = Math.round(
-                    (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
-                );
-                if (theme === "dark") {
-                    if (brightness < 60) {
-                        return "#ffffff";
+                const theme = localStorage.getItem("theme"); //Get the theme from the local storage
+                const rgb = toRGB(hex); //Convert the hex color to RGB
+                const brightness = Math.round((rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000); //Calculate the brightness of the color
+                if (theme === "dark") { //If the theme is dark
+                    if (brightness < 60) { //If the brightness is less than 60
+                        return "#ffffff"; //Return white
                     }
-                } else {
-                    if (brightness > 125) {
-                        return "#000000";
+                } else { //If the theme is light
+                    if (brightness > 125) { //If the brightness is greater than 125
+                        return "#000000"; //Return black
                     }
                 }
                 return hex;
             }
 
+            /**
+             * Display the categories in the sidebar
+             * @returns {void}
+             */
             function displayCategories() {
-                document.getElementById("categories").innerHTML = "";
+                document.getElementById("categories").innerHTML = ""; //Clear the categories
                 categories.forEach((cat) => {
-                    const color = cat.color
-                        ? cat.color
-                        : getComputedStyle(document.body).getPropertyValue(
-                            `--bs-primary`
-                        );
-                    const li = document.createElement("li");
-                    li.className =
-                        "d-flex justify-content-between align-items-center nav-item ";
-                    const a = document.createElement("a");
-                    a.className = "w-100 nav-link";
-                    const img = document.createElement("img");
-                    img.src = cat.url ? getFaviconUrl(cat.url) : "";
-                    img.width = 20;
-                    img.className = "me-2";
-                    a.appendChild(img);
-                    a.innerHTML += cat.name == "all" ? "All" : cat.name;
+                    const color = cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
+                    const li = document.createElement("li"); //Create a new list item
+                    li.className ="d-flex justify-content-between align-items-center nav-item "; //Add the classes to the list item
+                    const a = document.createElement("a"); //Create a new anchor
+                    a.className = "w-100 nav-link"; //Add the classes to the anchor
+                    const img = document.createElement("img"); //Create a new image
+                    img.src = cat.url ? getFaviconUrl(cat.url) : ""; //Set the source of the image to the favicon of the category if it exists
+                    img.width = 20; //Set the width of the image
+                    img.className = "me-2"; //Add the class to the image
+                    a.appendChild(img); //Add the image to the anchor
+                    a.innerHTML += cat.name == "all" ? "All" : cat.name; //Add the name of the category to the anchor
 
-                    if (cat.name == currentCategory) {
-                        a.classList.add("active");
-                        a.style.backgroundColor = color;
-                        a.style.color = determineTextColor(color);
+                    if (cat.name == currentCategory) { //If the category is the current category
+                        a.classList.add("active"); //Add the class "active" to the anchor
+                        a.style.backgroundColor = color; //Set the background color of the anchor to the color of the category
+                        a.style.color = determineTextColor(color); //Set the color of the anchor to the text color of the category
                     } else {
-                        a.style.color = adjustColor(color);
+                        a.style.color = adjustColor(color); //Set the color of the anchor to the adjusted color of the category
                     }
 
-                    if (cat.name != "all") {
-                        const span = document.createElement("span");
-                        span.innerHTML = `<i class="editIco bi bi-pencil-square float-end"></i>`;
-                        a.appendChild(span);
+                    if (cat.name != "all") { //If the category is not "all"
+                        const span = document.createElement("span"); //Create a new span
+                        span.innerHTML = `<i class="editIco bi bi-pencil-square float-end"></i>`;  //Add the edit icon to the span
+                        a.appendChild(span); //Add the span to the anchor
                     }
 
                     li.appendChild(a);
