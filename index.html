@@ -92,8 +92,11 @@
                 <div class="col-md-6">
                     <input type="text" class="form-control" id="expense-name" placeholder="Expense Name" required>
                 </div>
-                <div class="col-md-4">
-                    <input type="number" class="form-control" id="expense-amount" placeholder="Amount" required>
+                <div class="col-md-2">
+                    <input type="number" step="0.01" class="form-control" id="expense-amount" placeholder="Amount" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="date" class="form-control" id="expense-date" required>
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100">Add</button>
@@ -105,6 +108,8 @@
                         <tr>
                             <th scope="col">Name</th>
                             <th scope="col">Amount</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Category</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
@@ -171,25 +176,25 @@
     </div>
 
     <div class="modal fade" id="modalConfirm" tabindex="-1" aria-labelledby="modalConfirm" aria-hidden="true"
-    aria-modal="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalConfirmTitle">Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p id="modalConfirmMessage">Message</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
-                <button type="button" class="btn btn-secondary" id="modalNoBtn"
-                    data-bs-dismiss="modal">Cancel</button>
+        aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfirmTitle">Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalConfirmMessage">Message</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
+                    <button type="button" class="btn btn-secondary" id="modalNoBtn"
+                        data-bs-dismiss="modal">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    
+
     <script>
         function changeTheme(theme) {
             var itemTheme = document.getElementById("itemTheme")
@@ -209,6 +214,13 @@
                 itemTheme.className = theme === 'dark' ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
                 localStorage.setItem('theme', theme);
             }
+
+            JsBarcode("#barcode", document.getElementById('barcode').alt, {
+                background: getComputedStyle(document.body).getPropertyValue('--bs-body-bg'),
+                lineColor: getComputedStyle(document.body).getPropertyValue('--bs-emphasis-color'),
+
+            })
+
         }
         function modalConfirm(title, messageHTML) {
             return new Promise((resolve, reject) => {
@@ -240,6 +252,7 @@
             const expenseForm = document.getElementById('expense-form');
             const expenseNameInput = document.getElementById('expense-name');
             const expenseAmountInput = document.getElementById('expense-amount');
+            const expenseDateInput = document.getElementById('expense-date');
             const expenseList = document.getElementById('expense-list');
             const totalAmountSpan = document.getElementById('total-amount');
             const sidebar = document.getElementById('sidebar-wrapper');
@@ -259,6 +272,10 @@
             ]
 
             function getFaviconUrl(url) {
+                if (!url) return '';
+                if (!url.startsWith('http')) {
+                    url = `http://${url}`;
+                }
                 const urlObj = new URL(url);
                 const faviconUrl = `http://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`;
                 return faviconUrl;
@@ -281,20 +298,11 @@
             let totalAmount = 0;
 
             function updateTotal() {
-                totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-                totalAmountSpan.textContent = totalAmount.toFixed(2);
+                totalAmountSpan.innerText = totalAmount.toFixed(2);
+                                
             }
 
-            function addExpense(name, amount) {
 
-                const currentCat = categories.filter(c => c.name === currentCategory)[0];
-                currentCat.expenses.push({ name, amount });
-                updateAllCat();
-                
-                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-                displayExpense();
-                
-            }
 
             function displayExpense() {
                 const currentCat = categories.filter(c => c.name === currentCategory)[0];
@@ -304,18 +312,30 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${exp.name}</td>
-                        <td>€${exp.amount.toFixed(2)}</td>
+                        <td>${exp.amount.toFixed(2)}€</td>
+                        <td>${exp.date}</td>
+                        <td>${exp.category}</td>
                         <td>
                             <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     `;
                     tr.querySelector('button').addEventListener('click', () => {
-                        const confirm = modalConfirm('Delete Expense', `Are you sure you want to delete the expense <strong>${exp.name}</strong>?`);
-                        if (confirm) {
-                            currentCat.expenses = currentCat.expenses.filter(e => e.name !== exp.name);
-                            updateAllCat();
-                            updateCurrentCategory(currentCategory);
-                        }
+                        const response = modalConfirm('Delete Expense', `Are you sure you want to delete the expense? <br> <strong>${exp.name} - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? '' : ` - ${exp.category}`}</strong>`);
+                        response.then((result) => {
+                            if (result) {
+                                categories = categories.map(cat => {
+                                    if (cat.name === exp.category) {
+                                        cat.expenses = cat.expenses.filter(e => e !== exp);
+                                    }
+                                    return cat;
+                                    console.log(cat)
+                                });
+                    
+                                updateAllCat();
+                                updateCurrentCategory(currentCategory);
+                                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+                            }
+                        });
                     });
                     expenseList.appendChild(tr);
                     totalAmount += exp.amount;
@@ -327,8 +347,23 @@
                 e.preventDefault();
                 const name = expenseNameInput.value;
                 const amount = parseFloat(expenseAmountInput.value);
-                if (name && !isNaN(amount) && amount > 0) {
-                    addExpense(name, amount);
+                const date = expenseDateInput.value; // yyyy-mm-dd
+                if (name && !isNaN(amount) && date) {
+                    const newExpense = {
+                        name,
+                        amount,
+                        date,
+                        category: currentCategory
+                    };
+                    categories = categories.map(cat => {
+                        if (cat.name === currentCategory) {
+                            cat.expenses.push(newExpense);
+                        }
+                        return cat;
+                    });
+                    updateAllCat();
+                    updateCurrentCategory(currentCategory);
+                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
                     expenseNameInput.value = '';
                     expenseAmountInput.value = '';
                 }
@@ -339,15 +374,14 @@
                 name: 'Amazon', //category
                 url: 'https://www.amazon.it', //can be null
                 expenses: [ 
-                    { name: 'Book', amount: 20 },
-                    { name: 'Headphones', amount: 50 }
+                    { name: 'Book', amount: 20, date: '2024-07-27', category: 'Amazon' },
+                    { name: 'Headphones', amount: 50, date: '2024-07-27', category: 'Amazon' },
                 ],
                 memberCard: "80000532", //can be null
 
             }
             */
 
-            // Load saved from storage
             const savedExpenses = JSON.parse(localStorage.getItem('expenses'));
 
 
@@ -363,8 +397,8 @@
                         catt.expenses.push(...cat.expenses);
                     }
                 });
-                
-                
+
+
 
             }
 
@@ -427,7 +461,7 @@
                                 modal.hide();
                             });
                         });
-                     
+
                     }
                     li.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -455,9 +489,14 @@
                     document.getElementById('barcode').hidden = true;
                 } else {
                     document.getElementById('barcode').hidden = false;
-                    JsBarcode("#barcode", currentCat.memberCard);
+                    document.getElementById('barcode').alt = currentCat.memberCard;
+                    JsBarcode("#barcode", currentCat.memberCard, {
+                        background: getComputedStyle(document.body).getPropertyValue('--bs-body-bg'),
+                        lineColor: getComputedStyle(document.body).getPropertyValue('--bs-emphasis-color'),
+
+                    })
                 }
-                
+
                 displayExpense();
                 updateTotal();
                 displayCategories();
@@ -486,7 +525,7 @@
                         expenses: [],
                         memberCard: memberCard.value
                     };
-                    categories.push(newCategory);   
+                    categories.push(newCategory);
                     updateAllCat();
                     updateCurrentCategory(newCategory.name);
 
@@ -499,15 +538,15 @@
                 });
 
 
-                
 
-            
+
+
             });
 
             const savedTheme = localStorage.getItem('theme');
             changeTheme(savedTheme);
         });
-    
+
     </script>
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
