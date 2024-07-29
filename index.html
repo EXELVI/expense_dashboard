@@ -68,14 +68,8 @@
                 Categories
                 <button id="add-category" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i></button>
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>Example</span>
-                    <span>
-                        <i class="bi bi-pencil-square text-primary me-2"></i>
-                        <i class="bi bi-trash text-danger" hidden></i>
-                    </span>
-                </li>
+            <ul class="list-group list-group-flush nav nav-pills" id="categories">
+
             </ul>
             <!-- Footer -->
             <hr>
@@ -94,7 +88,7 @@
         <!-- Page Content -->
         <div class="container mt-5">
             <h1 class="text-center mb-4">Expense Dashboard</h1>
-            <form id="expense-form" class="row g-3 mb-4">
+            <form id="expense-form" class="row g-3 mb-4" hidden>
                 <div class="col-md-6">
                     <input type="text" class="form-control" id="expense-name" placeholder="Expense Name" required>
                 </div>
@@ -117,12 +111,37 @@
                     <tbody id="expense-list">
                     </tbody>
                 </table>
+
             </div>
             <div id="total-expense" class="text-end mt-4">
                 <h2>Total: €<span id="total-amount">0</span></h2>
             </div>
+            <div class="text-center">
+                <img id="barcode" alt="barcode" hidden>
+            </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalConfirm" tabindex="-1" aria-labelledby="modalConfirm" aria-hidden="true"
+        aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalConfirmTitle">Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modalConfirmMessage">Message</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
+                    <button type="button" class="btn btn-secondary" id="modalNoBtn"
+                        data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         function changeTheme(theme) {
@@ -143,7 +162,32 @@
                 localStorage.setItem('theme', theme);
             }
         }
+        function modalConfirm(title, messageHTML) {
+            return new Promise((resolve, reject) => {
+                const modal = new bootstrap.Modal(document.getElementById('modalConfirm'));
+                document.getElementById('modalConfirmTitle').innerText = title;
+                document.getElementById('modalConfirmMessage').innerHTML = messageHTML;
 
+                document.getElementById('modalConfirm').addEventListener('hide.bs.modal', event => {
+                    resolve(false);
+                })
+
+                const yesBtn = document.getElementById('modalYesBtn');
+                const noBtn = document.getElementById('modalNoBtn');
+
+                yesBtn.onclick = () => {
+                    resolve(true);
+                    modal.hide();
+                };
+
+                noBtn.onclick = () => {
+                    resolve(false);
+                    modal.hide();
+                };
+
+                modal.show();
+            });
+        }
         document.addEventListener('DOMContentLoaded', () => {
             const expenseForm = document.getElementById('expense-form');
             const expenseNameInput = document.getElementById('expense-name');
@@ -153,8 +197,11 @@
             const sidebar = document.getElementById('sidebar-wrapper');
             const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
 
-            const currentCategory = "all";
-            const categories = [
+
+
+
+            var currentCategory = "all";
+            var categories = [
                 {
                     name: "all",
                     url: null,
@@ -255,14 +302,95 @@
                 catt.expenses.forEach(exp => {
                     all.expenses.push(exp);
                 });
+
+                categories[0] = all;
             }
 
+
+
+            function displayCategories() {
+                document.getElementById('categories').innerHTML = '';
+                categories.forEach(cat => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item d-flex justify-content-between align-items-center nav-item ';
+                    li.innerHTML = `
+                        <a class="nav-link ${cat.name == currentCategory ? 'active' : ''}">${cat.name == "all" ? "All" : cat.name}</a>`;
+                    if (cat.name != "all") {
+                        li.innerHTML += `
+                              <span>
+                            <i class="bi bi-pencil-square text-primary me-2"></i>
+                            <i class="bi bi-trash text-danger" hidden></i>
+                        </span>
+                        `;
+                    }
+                    if (cat.name != "all") {
+                        li.querySelector('.bi-pencil-square').addEventListener('click', () => {
+                            const inputHtml = `<input type="text" class="form-control" value="${cat.name}">`;
+                            const response = modalConfirm('Edit Category', inputHtml);
+                            response.then((result) => {
+                                if (result) {
+                                    const newName = document.querySelector('#modalConfirmMessage input').value;
+                                    cat.name = newName;
+                                    li.querySelector('span').textContent = newName;
+                                    updateAllCat();
+                                }
+                            });
+                        });
+                        li.querySelector('.bi-trash').addEventListener('click', () => {
+                            const response = modalConfirm('Delete Category', `Are you sure you want to delete the category ${cat.name}?`);
+                            response.then((result) => {
+                                if (result) {
+                                    categories = categories.filter(c => c !== cat);
+                                    li.remove();
+                                    updateAllCat();
+                                }
+                            });
+                        });
+                    }
+                    li.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        currentCategory = cat.name;
+                        updateAllCat();
+                        updateCurrentCategory(cat.name);
+                    });
+                    document.getElementById('categories').appendChild(li);
+                });
+            }
+
+            updateAllCat();
+
+            function updateCurrentCategory(cat) {
+                if (cat == "all") {
+                    document.getElementById('expense-form').hidden = true;
+                } else {
+                    document.getElementById('expense-form').hidden = false;
+                }
+                const currentCat = categories.filter(c => c.name === cat)[0];
+                expenseList.innerHTML = '';
+                totalAmount = 0;
+                if (!currentCat.memberCard) {
+                    document.getElementById('barcode').hidden = true;
+                } else {
+                    document.getElementById('barcode').hidden = false;
+                    JsBarcode("#barcode", currentCat.memberCard);
+                }
+                
+                currentCat.expenses.forEach(exp => {
+                    addExpense(exp.name, exp.amount);
+                });
+                updateTotal();
+                displayCategories();
+
+            }
+
+            updateCurrentCategory(currentCategory);
 
 
         });
         const savedTheme = localStorage.getItem('theme');
         changeTheme(savedTheme);
     </script>
+    <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
