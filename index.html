@@ -41,7 +41,7 @@
         }
 
         .editIco {
-           cursor: pointer;
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
@@ -98,16 +98,17 @@
         <!-- Page Content -->
         <div class="container mt-5">
 
-       
+
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="text-center mb-4 flex-grow-1">Expense Dashboard</h1>
-                <button type="button" id="barcodeBtn" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBarcode">
+                <button type="button" id="barcodeBtn" class="btn btn-secondary" data-bs-toggle="modal"
+                    data-bs-target="#modalBarcode">
                     <i class="bi bi-upc"></i>
                 </button>
             </div>
-            
-          
-            
+
+
+
 
             <form id="expense-form" class="row g-3 mb-4" hidden>
                 <div class="col-md-5">
@@ -120,12 +121,10 @@
                 <div class="col-md-2">
                     <input type="date" class="form-control" id="expense-date" required>
                 </div>
-                <div class="col-sm-1">
-                    <input type="color" class="form-control h-100" id="expense-color" value="#007bff">
-                </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100">Add</button>
                 </div>
+
             </form>
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="expense-table">
@@ -184,9 +183,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control mb-2" placeholder="Category Name">
+                    <div class="justify-content-between d-flex mb-2">
+                        <input type="text" class="form-control me-2" placeholder="Category Name">
+                        <input type="color" class="form-control form-control-color" placeholder="Color">
+                    </div>
                     <input type="url" class="form-control mb-2" placeholder="URL">
                     <input type="text" class="form-control mb-2" placeholder="Member Card">
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="modalAddCategoryBtn">Add</button>
@@ -241,10 +245,10 @@
     </div>
 
     <script>
-   const ctx = document.getElementById('chart').getContext('2d');
+        const ctx = document.getElementById('chart').getContext('2d');
 
         var myChart = new Chart(ctx, {});
-        
+
 
         function changeTheme(theme) {
             var itemTheme = document.getElementById("itemTheme")
@@ -351,35 +355,89 @@
                 totalAmountSpan.innerText = totalAmount.toFixed(2);
             }
 
-            
-            function drawChart() {
-                    const data = {
-                        labels: categories.filter(cat => cat.name !== "all").map(cat => cat.name),
-                        datasets: [{
-                            label: 'Expenses',
-                            data: categories.filter(cat => cat.name !== "all").map(cat => cat.expenses.reduce((acc, exp) => acc + exp.amount, 0)),
-                            backgroundColor: categories.filter(cat => cat.name !== "all").map(cat => getComputedStyle(document.body).getPropertyValue(`--bs-${cat.name}-bg`)),
-                            borderColor: categories.filter(cat => cat.name !== "all").map(cat => getComputedStyle(document.body).getPropertyValue(`--bs-${cat.name}-border`)),
-                            borderWidth: 1
-                        }]
-                    };
 
-                    const config = {
-                        type: 'bar',
+            function drawChart() {
+                const labels = [];
+                const datasets = [];
+
+                if (currentCategory == "all") {
+                    categories.filter(cat => cat.name !== "all").forEach(cat => {
+                        const data = [];
+                        cat.expenses.forEach(exp => {
+                            const index = labels.indexOf(exp.date);
+                            if (index === -1) {
+                                labels.push(exp.date);
+                                data.push(exp.amount);
+                            } else {
+                                data[index] += exp.amount;
+                            }
+                        });
+                        datasets.push({
+                            label: cat.name,
+                            data: data,
+                            borderColor: cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`),
+                            fill: false
+                        });
+                    });
+                } else {
+                    const data = [];
+                    categories.filter(cat => cat.name === currentCategory)[0].expenses.forEach(exp => {
+                        const index = labels.indexOf(exp.date);
+                        if (index === -1) {
+                            labels.push(exp.date);
+                            data.push(exp.amount);
+                        } else {
+                            data[index] += exp.amount;
+                        }
+                    });
+                    datasets.push({
+                        label: currentCategory,
                         data: data,
-                        options: {
-                            scales: {
-                                y: {
-                                    beginAtZero: true
+                        borderColor: getComputedStyle(document.body).getPropertyValue(`--bs-primary`),
+                        fill: false
+                    });
+                }
+
+                const config = {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        interaction: {
+                            beforeTitle: "%",
+                            mode: 'index'
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        let label = context.dataset.label || '';
+
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y.toFixed(2) + "€"
+                                        }
+                                        return label;
+                                    }
                                 }
                             }
                         }
-                    };
+                    }
+                };
 
-                    myChart.destroy();
-                    myChart = new Chart(ctx, config);
-                    resizeCanvas();
-                }
+                myChart.destroy();
+                myChart = new Chart(ctx, config);
+                resizeCanvas();
+            }
 
 
 
@@ -486,17 +544,33 @@
             function displayCategories() {
                 document.getElementById('categories').innerHTML = '';
                 categories.forEach(cat => {
+                    const color = cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
                     const li = document.createElement('li');
                     li.className = 'd-flex justify-content-between align-items-center nav-item ';
-                    li.innerHTML = `
-                        <a class="w-100 nav-link ${cat.name == currentCategory ? 'active' : ''}"><img width="20" src="${cat.url ? getFaviconUrl(cat.url) : ''}" class="me-2">${cat.name == "all" ? "All" : cat.name}</a>`;
-                    if (cat.name != "all") {
-                        li.innerHTML += `
-                              <span>
-                            <i class="editIco bi bi-pencil-square text-primary mx-2"></i>
-                        </span>
-                        `;
+                    const a = document.createElement('a');
+                    a.className = 'w-100 nav-link';
+                    const img = document.createElement('img');
+                    img.src = cat.url ? getFaviconUrl(cat.url) : '';
+                    img.width = 20;
+                    img.className = 'me-2';
+                    a.appendChild(img);
+                    a.innerHTML += cat.name == "all" ? "All" : cat.name;
+
+
+                    if (cat.name == currentCategory) {
+                        a.classList.add('active');
+                        a.style.backgroundColor = color;  
+                        a.style.color = '#fff'; 
                     }
+
+
+                    if (cat.name != "all") {
+                        const span = document.createElement('span');
+                        span.innerHTML = `<i class="editIco bi bi-pencil-square float-end"></i>`;
+                        a.appendChild(span);
+                    }
+
+                    li.appendChild(a);
                     if (cat.name != "all") {
                         li.querySelector('.bi-pencil-square').addEventListener('click', () => {
                             const modal = new bootstrap.Modal(document.getElementById('modalEditCategory'));
@@ -590,6 +664,8 @@
             const addCategoryBtn = document.getElementById('add-category');
             addCategoryBtn.addEventListener('click', () => {
                 const modal = new bootstrap.Modal(document.getElementById('modalAddCategory'));
+                const color = document.querySelector('#modalAddCategory input:nth-of-type(2)');
+                color.value = getComputedStyle(document.body).getPropertyValue('--bs-primary');
                 modal.show();
 
                 const addCategoryBtn = document.getElementById('modalAddCategoryBtn');
@@ -597,6 +673,7 @@
                     const name = document.querySelector('#modalAddCategory input')
                     const url = document.querySelector('#modalAddCategory input:nth-of-type(2)')
                     const memberCard = document.querySelector('#modalAddCategory input:nth-of-type(3)')
+
                     if (!name.value) {
                         name.classList.add('is-invalid');
                         return;
@@ -604,6 +681,7 @@
                     const newCategory = {
                         name: name.value,
                         url: url.value,
+                        color: color.value,
                         expenses: [],
                         memberCard: memberCard.value
                     };
@@ -628,7 +706,7 @@
             changeTheme(savedTheme);
 
 
-                resizeCanvas();
+            resizeCanvas();
         });
 
         window.addEventListener('resize', () => {
@@ -646,7 +724,7 @@
         }
 
     </script>
- 
+
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
