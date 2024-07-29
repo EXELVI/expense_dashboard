@@ -369,20 +369,21 @@
 
 
             function drawChart() {
-                const labels = [];
                 const datasets = [];
 
                 if (currentCategory == "all") {
                     categories.filter(cat => cat.name !== "all").forEach(cat => {
-                        const data = [];
-                        cat.expenses.forEach(exp => {
-                            const index = labels.indexOf(exp.date);
+                        const data = []; // {x: date, y: amount}
+                        cat.expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
+                            const index = data.findIndex(d => d.x === exp.date);
                             if (index === -1) {
-                                labels.push(exp.date);
-                                data.push(exp.amount);
+                                data.push({
+                                    x: exp.date,
+                                    y: exp.amount
+                                });
                             } else {
-                                data[index] += exp.amount;
-                            }
+                                data[index].y += exp.amount;
+                            }                        
                         });
                         datasets.push({
                             label: cat.name,
@@ -393,7 +394,7 @@
                     });
                 } else {
                     const data = [];
-                    categories.filter(cat => cat.name === currentCategory)[0].expenses.forEach(exp => {
+                    categories.filter(cat => cat.name === currentCategory)[0].expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
                         const index = labels.indexOf(exp.date);
                         if (index === -1) {
                             labels.push(exp.date);
@@ -409,17 +410,21 @@
                         fill: false
                     });
                 }
-
                 const config = {
                     type: 'line',
                     data: {
-                        labels: labels,
                         datasets: datasets
                     },
                     options: {
                         scales: {
                             y: {
                                 beginAtZero: true
+                            },
+                            xAxes: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day'
+                                }
                             }
                         },
                         interaction: {
@@ -431,6 +436,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function (context) {
+                               
                                         let label = context.dataset.label || '';
 
                                         if (label) {
@@ -458,13 +464,15 @@
                 const currentCat = categories.filter(c => c.name === currentCategory)[0];
                 expenseList.innerHTML = '';
                 totalAmount = 0;
+
                 currentCat.expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(exp => {
+                    const color = categories.filter(cat => cat.name === exp.category)[0].color ? categories.filter(cat => cat.name === exp.category)[0].color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${exp.name}</td>
-                        <td><span class="badge bg-${exp.amount > 0 ? 'danger' : 'success'}">${exp.amount.toFixed(2)}</span></td>
+                        <td><span class="badge bg-${exp.amount > 0 ? 'danger' : 'success'}">${exp.amount.toFixed(2)}€</span></td>
                         <td>${exp.date}</td>
-                        <td>${exp.category}</td>
+                        <td><span class="badge" style="background-color: ${color}; color: ${determineTextColor(color)}">${exp.category}</span></td>
                         <td>
                             <button class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
@@ -479,7 +487,6 @@
                                         cat.expenses = cat.expenses.filter(e => e !== exp);
                                     }
                                     return cat;
-                                    console.log(cat)
                                 });
 
                                 updateAllCat();
@@ -565,12 +572,12 @@
                                     updateAllCat();
                                     updateCurrentCategory(currentCategory);
                                     localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-
+                                    tr.querySelector('button.btn-primary').removeEventListener('click', changeItem);
                                 }
                             }
                         });
                     }
-                    
+
                     tr.querySelector('button.btn-primary').addEventListener('click', changeItem);
 
                     expenseList.appendChild(tr);
@@ -900,11 +907,12 @@
         }
 
     </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.1/chartjs-adapter-moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-</body>
 
 </html>
