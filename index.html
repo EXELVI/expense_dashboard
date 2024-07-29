@@ -187,7 +187,11 @@
                         <input type="text" class="form-control me-2" placeholder="Category Name">
                         <input type="color" class="form-control form-control-color" placeholder="Color">
                     </div>
-                    <input type="url" class="form-control mb-2" placeholder="URL">
+                    <div class="mb-2 d-flex justify-content-between">
+                        <img src="" alt="" class="img-thumbnail mx-2 mb-1 w-20 h-20" width="40" height="40">
+                        <input type="url" class="form-control mb-2" placeholder="URL">
+
+                    </div>
                     <input type="text" class="form-control mb-2" placeholder="Member Card">
 
 
@@ -422,7 +426,7 @@
                             beforeTitle: "%",
                             mode: 'index'
                         },
-
+                        responsive: true,
                         plugins: {
                             tooltip: {
                                 callbacks: {
@@ -454,7 +458,7 @@
                 const currentCat = categories.filter(c => c.name === currentCategory)[0];
                 expenseList.innerHTML = '';
                 totalAmount = 0;
-                currentCat.expenses.forEach(exp => {
+                currentCat.expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(exp => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${exp.name}</td>
@@ -462,10 +466,11 @@
                         <td>${exp.date}</td>
                         <td>${exp.category}</td>
                         <td>
+                            <button class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     `;
-                    tr.querySelector('button').addEventListener('click', () => {
+                    tr.querySelector('button.btn-danger').addEventListener('click', () => {
                         const response = modalConfirm('Delete Expense', `Are you sure you want to delete the expense? <br> <strong>${exp.name} - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? '' : ` - ${exp.category}`}</strong>`);
                         response.then((result) => {
                             if (result) {
@@ -483,6 +488,91 @@
                             }
                         });
                     });
+
+                    function changeItem() {
+
+                        var inputDiv = document.createElement('div');
+                        var inputName = document.createElement('input');
+                        inputName.type = 'text';
+                        inputName.defaultValue = exp.name;
+                        inputName.className = 'form-control mb-2';
+                        inputName.placeholder = 'Expense Name';
+                        inputDiv.appendChild(inputName);
+
+                        var inputAmount = document.createElement('input');
+                        inputAmount.type = 'number';
+                        inputAmount.defaultValue = exp.amount;
+                        inputAmount.step = '0.01';
+                        inputAmount.className = 'form-control mb-2';
+                        inputAmount.placeholder = 'Amount';
+                        inputDiv.appendChild(inputAmount);
+
+                        var inputDate = document.createElement('input');
+                        inputDate.type = 'date';
+                        inputDate.defaultValue = exp.date;
+                        inputDate.className = 'form-control mb-2';
+                        inputDiv.appendChild(inputDate);
+
+                        var selectCategory = document.createElement('select');
+                        selectCategory.className = 'form-select mb-2';
+                        categories.filter(cat => cat.name !== "all").sort((a, b) => a.name == exp.category ? -1 : 1).forEach(cat => {
+                            const option = document.createElement('option');
+                            option.value = cat.name;
+                            option.innerText = cat.name;
+                            selectCategory.appendChild(option);
+                        });
+                        inputDiv.appendChild(selectCategory);
+
+                        const response = modalConfirm('Edit Expense', inputDiv.innerHTML);
+                        response.then((result) => {
+                            if (result) {
+                                const newName = document.querySelector('#modalConfirm input[placeholder="Expense Name"]').value;
+                                const newAmount = parseFloat(document.querySelector('#modalConfirm input[placeholder="Amount"]').value);
+                                const newDate = document.querySelector('#modalConfirm input[type="date"]').value;
+                                const newCategory = document.querySelector('#modalConfirm select').value;
+                                if (newName && !isNaN(newAmount) && newDate) {
+                                    //if category changed, remove from current category and add to new category
+                                    if (newCategory !== exp.category) {
+                                        categories = categories.map(cat => {
+                                            if (cat.name === exp.category) {
+                                                cat.expenses = cat.expenses.filter(e => e !== exp);
+                                            }
+                                            if (cat.name === newCategory) {
+                                                cat.expenses.push({
+                                                    name: newName,
+                                                    amount: newAmount,
+                                                    date: newDate,
+                                                    category: newCategory
+                                                });
+                                            }
+                                            return cat;
+                                        });
+                                    } else {
+                                        categories = categories.map(cat => {
+                                            if (cat.name === exp.category) {
+                                                cat.expenses = cat.expenses.map(e => {
+                                                    if (e === exp) {
+                                                        e.name = newName;
+                                                        e.amount = newAmount;
+                                                        e.date = newDate;
+                                                    }
+                                                    return e;
+                                                });
+                                            }
+                                            return cat;
+                                        });
+                                    }
+                                    updateAllCat();
+                                    updateCurrentCategory(currentCategory);
+                                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+
+                                }
+                            }
+                        });
+                    }
+                    
+                    tr.querySelector('button.btn-primary').addEventListener('click', changeItem);
+
                     expenseList.appendChild(tr);
                     totalAmount += exp.amount;
                 });
@@ -602,7 +692,7 @@
                         li.querySelector('.bi-pencil-square').addEventListener('click', () => {
                             const modal = new bootstrap.Modal(document.getElementById('modalEditCategory'));
                             const color = document.querySelector('#modalEditCategory .form-control-color');
-                            
+
                             modal.show();
                             const name = document.querySelector('#modalEditCategory input[placeholder="Category Name"]');
                             const url = document.querySelector('#modalEditCategory input[type="url"]');
@@ -666,9 +756,9 @@
                                 localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
                                 modal.hide();
                             }
-                            
+
                             editCategoryBtn.addEventListener('click', deleteCat);
-            
+
                             document.getElementById('modalEditCategory').addEventListener('hide.bs.modal', () => {
                                 editCategoryBtn.removeEventListener('click', deleteCat);
                             });
@@ -690,12 +780,17 @@
             updateAllCat();
 
             function updateCurrentCategory(cat) {
+                currentCategory = cat;
                 if (cat == "all") {
                     document.getElementById('expense-form').hidden = true;
                 } else {
                     document.getElementById('expense-form').hidden = false;
                 }
                 const currentCat = categories.filter(c => c.name === cat)[0];
+                if (cat != "all") currentCat.expenses = currentCat.expenses.map(exp => {
+                    exp.category = cat;
+                    return exp;
+                });
                 expenseList.innerHTML = '';
                 totalAmount = 0;
                 if (!currentCat.memberCard) {
@@ -725,13 +820,28 @@
             addCategoryBtn.addEventListener('click', () => {
                 const modal = new bootstrap.Modal(document.getElementById('modalAddCategory'));
                 const color = document.querySelector('#modalAddCategory .form-control-color');
+                const url = document.querySelector('#modalAddCategory input[type="url"]')
+                const img = document.querySelector('#modalAddCategory img');
+                img.src = '';
+
+                var typingTimer; //timer identifier
+                var doneTypingInterval = 500; //time in ms, 5 second for example
+                url.addEventListener('keyup', () => {
+                    clearTimeout(typingTimer);
+                    if (url.value) {
+                        typingTimer = setTimeout(() => {
+                            img.src = getFaviconUrl(url.value);
+                        }, doneTypingInterval);
+                    }
+                });
+
                 color.value = getComputedStyle(document.body).getPropertyValue('--bs-primary');
                 modal.show();
 
                 const addCategoryBtn = document.getElementById('modalAddCategoryBtn');
-                addCategoryBtn.addEventListener('click', () => {
+                function addCat() {
+
                     const name = document.querySelector('#modalAddCategory input')
-                    const url = document.querySelector('#modalAddCategory input[type="url"]')
                     const memberCard = document.querySelector('#modalAddCategory input[placeholder="Member Card"]')
 
                     if (!name.value) {
@@ -745,19 +855,25 @@
                         expenses: [],
                         memberCard: memberCard.value
                     };
+
                     categories.push(newCategory);
+                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+
+
                     updateAllCat();
                     updateCurrentCategory(newCategory.name);
 
-                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+
                     name.value = '';
                     url.value = '';
                     memberCard.value = '';
                     modal.hide();
+                }
+                addCategoryBtn.addEventListener('click', addCat);
 
+                document.getElementById('modalAddCategory').addEventListener('hide.bs.modal', () => {
+                    addCategoryBtn.removeEventListener('click', addCat);
                 });
-
-
 
 
             });
