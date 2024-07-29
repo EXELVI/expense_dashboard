@@ -68,7 +68,7 @@
                 Categories
                 <button id="add-category" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i></button>
             </div>
-            <ul class="list-group list-group-flush nav nav-pills" id="categories">
+            <ul class="nav nav-pills flex-column" id="categories">
 
             </ul>
             <!-- Footer -->
@@ -122,27 +122,74 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalConfirm" tabindex="-1" aria-labelledby="modalConfirm" aria-hidden="true"
+
+
+    <!--add category modal-->
+    <div class="modal fade" id="modalAddCategory" tabindex="-1" aria-labelledby="modalAddCategory" aria-hidden="true"
         aria-modal="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalConfirmTitle">Title</h5>
+                    <h5 class="modal-title" id="modalAddCategoryTitle">Add Category</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="modalConfirmMessage">Message</p>
+                    <input type="text" class="form-control mb-2" placeholder="Category Name">
+                    <input type="url" class="form-control mb-2" placeholder="URL">
+                    <input type="text" class="form-control mb-2" placeholder="Member Card">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
-                    <button type="button" class="btn btn-secondary" id="modalNoBtn"
-                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="modalAddCategoryBtn">Add</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="modal fade" id="modalEditCategory" tabindex="-1" aria-labelledby="modalEditCategory" aria-hidden="true"
+        aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEditCategoryTitle">Edit Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" placeholder="Category Name">
+                    <input type="url" class="form-control mb-2" placeholder="URL">
+                    <input type="text" class="form-control mb-2" placeholder="Member Card">
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn btn-danger" id="deleteCategory">Delete</button>
+                    <div class="d-flex">
+                        <button type="button" class="btn btn-success me-2" id="modalEditCategoryBtn">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="modalConfirm" tabindex="-1" aria-labelledby="modalConfirm" aria-hidden="true"
+    aria-modal="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmTitle">Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalConfirmMessage">Message</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
+                <button type="button" class="btn btn-secondary" id="modalNoBtn"
+                    data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
     <script>
         function changeTheme(theme) {
             var itemTheme = document.getElementById("itemTheme")
@@ -159,6 +206,7 @@
                 }
             } else if (theme === 'dark' || theme === 'light') {
                 document.body.setAttribute('data-bs-theme', theme);
+                itemTheme.className = theme === 'dark' ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
                 localStorage.setItem('theme', theme);
             }
         }
@@ -212,7 +260,7 @@
 
             function getFaviconUrl(url) {
                 const urlObj = new URL(url);
-                const faviconUrl = `${urlObj.origin}/favicon.ico`;
+                const faviconUrl = `http://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`;
                 return faviconUrl;
             }
 
@@ -238,23 +286,40 @@
             }
 
             function addExpense(name, amount) {
-                const expense = { name, amount };
-                expenses.push(expense);
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${name}</td>
-                    <td>€${amount.toFixed(2)}</td>
-                    <td><button class="delete-btn">Elimina</button></td>
-                `;
-                row.scope = "row";
-                expenseList.appendChild(row);
 
-                row.querySelector('.delete-btn').addEventListener('click', () => {
-                    expenses = expenses.filter(e => e !== expense);
-                    row.remove();
-                    updateTotal();
+                const currentCat = categories.filter(c => c.name === currentCategory)[0];
+                currentCat.expenses.push({ name, amount });
+                updateAllCat();
+                
+                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+                displayExpense();
+                
+            }
+
+            function displayExpense() {
+                const currentCat = categories.filter(c => c.name === currentCategory)[0];
+                expenseList.innerHTML = '';
+                totalAmount = 0;
+                currentCat.expenses.forEach(exp => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${exp.name}</td>
+                        <td>€${exp.amount.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                        </td>
+                    `;
+                    tr.querySelector('button').addEventListener('click', () => {
+                        const confirm = modalConfirm('Delete Expense', `Are you sure you want to delete the expense <strong>${exp.name}</strong>?`);
+                        if (confirm) {
+                            currentCat.expenses = currentCat.expenses.filter(e => e.name !== exp.name);
+                            updateAllCat();
+                            updateCurrentCategory(currentCategory);
+                        }
+                    });
+                    expenseList.appendChild(tr);
+                    totalAmount += exp.amount;
                 });
-
                 updateTotal();
             }
 
@@ -292,18 +357,15 @@
 
             function updateAllCat() {
                 var catt = categories.filter(cat => cat.name === "all")[0];
-                var all = {
-                    name: "all",
-                    url: null,
-                    expenses: [],
-                    memberCard: null
-                }
-
-                catt.expenses.forEach(exp => {
-                    all.expenses.push(exp);
+                catt.expenses = [];
+                categories.forEach(cat => {
+                    if (cat.name !== "all") {
+                        catt.expenses.push(...cat.expenses);
+                    }
                 });
+                
+                
 
-                categories[0] = all;
             }
 
 
@@ -312,40 +374,60 @@
                 document.getElementById('categories').innerHTML = '';
                 categories.forEach(cat => {
                     const li = document.createElement('li');
-                    li.className = 'list-group-item d-flex justify-content-between align-items-center nav-item ';
+                    li.className = 'd-flex justify-content-between align-items-center nav-item ';
                     li.innerHTML = `
-                        <a class="nav-link ${cat.name == currentCategory ? 'active' : ''}">${cat.name == "all" ? "All" : cat.name}</a>`;
+                        <a class="nav-link ${cat.name == currentCategory ? 'active' : ''}"><img width="20" src="${cat.url ? getFaviconUrl(cat.url) : ''}" class="me-2">${cat.name == "all" ? "All" : cat.name}</a>`;
                     if (cat.name != "all") {
                         li.innerHTML += `
                               <span>
                             <i class="bi bi-pencil-square text-primary me-2"></i>
-                            <i class="bi bi-trash text-danger" hidden></i>
                         </span>
                         `;
                     }
                     if (cat.name != "all") {
                         li.querySelector('.bi-pencil-square').addEventListener('click', () => {
-                            const inputHtml = `<input type="text" class="form-control" value="${cat.name}">`;
-                            const response = modalConfirm('Edit Category', inputHtml);
-                            response.then((result) => {
-                                if (result) {
-                                    const newName = document.querySelector('#modalConfirmMessage input').value;
-                                    cat.name = newName;
-                                    li.querySelector('span').textContent = newName;
+                            const modal = new bootstrap.Modal(document.getElementById('modalEditCategory'));
+                            modal.show();
+                            const name = document.querySelector('#modalEditCategory input')
+                            const url = document.querySelector('#modalEditCategory input:nth-of-type(2)')
+                            const memberCard = document.querySelector('#modalEditCategory input:nth-of-type(3)')
+                            name.value = cat.name;
+                            url.value = cat.url;
+                            memberCard.value = cat.memberCard;
+                            const deleteCategory = document.getElementById('deleteCategory');
+                            deleteCategory.addEventListener('click', async () => {
+                                const confirm = await modalConfirm('Delete Category', `Are you sure you want to delete the category <strong>${cat.name}</strong>?`);
+                                if (confirm) {
+                                    categories = categories.filter(c => c.name !== cat.name);
                                     updateAllCat();
+                                    updateCurrentCategory("all");
+                                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+                                    modal.hide();
                                 }
                             });
-                        });
-                        li.querySelector('.bi-trash').addEventListener('click', () => {
-                            const response = modalConfirm('Delete Category', `Are you sure you want to delete the category ${cat.name}?`);
-                            response.then((result) => {
-                                if (result) {
-                                    categories = categories.filter(c => c !== cat);
-                                    li.remove();
-                                    updateAllCat();
-                                }
+                            const editCategoryBtn = document.getElementById('modalEditCategoryBtn');
+                            editCategoryBtn.addEventListener('click', () => {
+                                const newName = name.value;
+                                const newUrl = url.value;
+                                const newMemberCard = memberCard.value;
+                                if (!newName) {
+                                    name.classList.add('is-invalid');
+                                    return;
+                                } else name.classList.remove('is-invalid');
+                                const newCategory = {
+                                    name: newName,
+                                    url: newUrl,
+                                    expenses: cat.expenses,
+                                    memberCard: newMemberCard
+                                };
+                                categories = categories.map(c => c.name === cat.name ? newCategory : c);
+                                updateAllCat();
+                                updateCurrentCategory(newCategory.name);
+                                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+                                modal.hide();
                             });
                         });
+                     
                     }
                     li.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -354,6 +436,7 @@
                         updateCurrentCategory(cat.name);
                     });
                     document.getElementById('categories').appendChild(li);
+
                 });
             }
 
@@ -375,9 +458,7 @@
                     JsBarcode("#barcode", currentCat.memberCard);
                 }
                 
-                currentCat.expenses.forEach(exp => {
-                    addExpense(exp.name, exp.amount);
-                });
+                displayExpense();
                 updateTotal();
                 displayCategories();
 
@@ -385,10 +466,48 @@
 
             updateCurrentCategory(currentCategory);
 
+            const addCategoryBtn = document.getElementById('add-category');
+            addCategoryBtn.addEventListener('click', () => {
+                const modal = new bootstrap.Modal(document.getElementById('modalAddCategory'));
+                modal.show();
 
+                const addCategoryBtn = document.getElementById('modalAddCategoryBtn');
+                addCategoryBtn.addEventListener('click', () => {
+                    const name = document.querySelector('#modalAddCategory input')
+                    const url = document.querySelector('#modalAddCategory input:nth-of-type(2)')
+                    const memberCard = document.querySelector('#modalAddCategory input:nth-of-type(3)')
+                    if (!name.value) {
+                        name.classList.add('is-invalid');
+                        return;
+                    } else name.classList.remove('is-invalid');
+                    const newCategory = {
+                        name: name.value,
+                        url: url.value,
+                        expenses: [],
+                        memberCard: memberCard.value
+                    };
+                    categories.push(newCategory);   
+                    updateAllCat();
+                    updateCurrentCategory(newCategory.name);
+
+                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
+                    name.value = '';
+                    url.value = '';
+                    memberCard.value = '';
+                    modal.hide();
+
+                });
+
+
+                
+
+            
+            });
+
+            const savedTheme = localStorage.getItem('theme');
+            changeTheme(savedTheme);
         });
-        const savedTheme = localStorage.getItem('theme');
-        changeTheme(savedTheme);
+    
     </script>
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
