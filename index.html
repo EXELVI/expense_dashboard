@@ -28,6 +28,13 @@
             flex-shrink: 0;
         }
 
+        .show-sidebar-btn {
+            display: none;
+            position: fixed;
+            z-index: 1031;
+
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
@@ -45,10 +52,6 @@
                 display: block;
             }
         }
-
-        .show-sidebar-btn {
-            display: none;
-        }
     </style>
 </head>
 
@@ -56,11 +59,11 @@
     <div class="d-flex">
         <!-- Show sidebar button (only on small screens) -->
         <button class="btn btn-primary show-sidebar-btn m-2" id="toggle-sidebar-btn">
-            <i class="bi bi-list"></i>
+            <i class="bi bi-chevron-right"></i>
         </button>
 
         <!-- Sidebar -->
-        <div class="border border-right p-3 sidebar" id="sidebar-wrapper">
+        <div class="border border-right p-3 sidebar bg-body" id="sidebar-wrapper">
             <div class="sidebar-heading d-flex justify-content-between align-items-center">
                 Categories
                 <button id="add-category" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i></button>
@@ -150,8 +153,33 @@
             const sidebar = document.getElementById('sidebar-wrapper');
             const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
 
+            const currentCategory = "all";
+            const categories = [
+                {
+                    name: "all",
+                    url: null,
+                    expenses: [],
+                    memberCard: null
+                },
+            ]
+
+            function getFaviconUrl(url) {
+                const urlObj = new URL(url);
+                const faviconUrl = `${urlObj.origin}/favicon.ico`;
+                return faviconUrl;
+            }
+
             toggleSidebarBtn.addEventListener('click', () => {
                 sidebar.classList.toggle('active');
+                toggleSidebarBtn.innerHTML = sidebar.classList.contains('active') ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
+                //move button,  like it is a part of the sidebar
+                let containsActive = sidebar.classList.contains('active');
+                for (let i = (containsActive ? 0 : 250); containsActive ? i < 250 : i > 0; containsActive ? i++ : i--) {
+                    setTimeout(() => {
+                        toggleSidebarBtn.style.left = `${i}px`;
+                    }, 0.9 * Math.abs(i - (containsActive ? 0 : 250)));
+                }
+
             });
 
             let expenses = [];
@@ -193,7 +221,47 @@
                     expenseAmountInput.value = '';
                 }
             });
+
+            /*
+            { 
+                name: 'Amazon', //category
+                url: 'https://www.amazon.it', //can be null
+                expenses: [ 
+                    { name: 'Book', amount: 20 },
+                    { name: 'Headphones', amount: 50 }
+                ],
+                memberCard: "80000532", //can be null
+
+            }
+            */
+
+            // Load saved from storage
+            const savedExpenses = JSON.parse(localStorage.getItem('expenses'));
+
+
+            if (savedExpenses) {
+                categories.push(...savedExpenses);
+            }
+
+            function updateAllCat() {
+                var catt = categories.filter(cat => cat.name === "all")[0];
+                var all = {
+                    name: "all",
+                    url: null,
+                    expenses: [],
+                    memberCard: null
+                }
+
+                catt.expenses.forEach(exp => {
+                    all.expenses.push(exp);
+                });
+            }
+
+
+
         });
+        const savedTheme = localStorage.getItem('theme');
+        changeTheme(savedTheme);
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
