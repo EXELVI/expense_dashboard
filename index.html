@@ -2,12 +2,12 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Expense Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sidebar {
@@ -33,7 +33,6 @@
             display: none;
             position: fixed;
             z-index: 1031;
-
         }
 
         .nav-link {
@@ -62,7 +61,6 @@
             }
         }
     </style>
-
 </head>
 
 <body>
@@ -76,29 +74,31 @@
         <div class="border border-right p-3 sidebar bg-body" id="sidebar-wrapper">
             <div class="sidebar-heading d-flex justify-content-between align-items-center">
                 Categories
-                <button id="add-category" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i></button>
+                <button id="add-category" class="btn btn-success btn-sm">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             </div>
-            <ul class="nav nav-pills flex-column my-3" id="categories">
-
-            </ul>
+            <ul class="nav nav-pills flex-column my-3" id="categories"></ul>
             <!-- Footer -->
-            <hr>
+            <hr />
             <div class="dropdown mt-auto">
                 <button class="btn btn-secondary dropdown-toggle w-100 me-5" type="button" id="dropdownMenuButton"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     All Settings
                 </button>
                 <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-                    <li><button class="dropdown-item d-flex gap-2 align-items-center" id="themeChangeBtn"><i
-                                id="itemTheme" class="bi bi-moon-stars-fill"></i> Change Theme</button></li>
+                    <li>
+                        <button class="dropdown-item d-flex gap-2 align-items-center" id="themeChangeBtn">
+                            <i id="itemTheme" class="bi bi-moon-stars-fill"></i> Change
+                            Theme
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
 
         <!-- Page Content -->
         <div class="container mt-5">
-
-
             <div class="d-flex justify-content-between align-items-center">
                 <h1 class="text-center mb-4 flex-grow-1">Expense Dashboard</h1>
                 <button type="button" id="barcodeBtn" class="btn btn-secondary" data-bs-toggle="modal"
@@ -107,24 +107,20 @@
                 </button>
             </div>
 
-
-
-
             <form id="expense-form" class="row g-3 mb-4" hidden>
                 <div class="col-md-5">
-                    <input type="text" class="form-control" id="expense-name" placeholder="Expense Name" required>
+                    <input type="text" class="form-control" id="expense-name" placeholder="Expense Name" required />
                 </div>
                 <div class="col-sm-2">
                     <input type="number" step="0.01" class="form-control" id="expense-amount" placeholder="Amount"
-                        required>
+                        required />
                 </div>
                 <div class="col-md-2">
-                    <input type="date" class="form-control" id="expense-date" required>
+                    <input type="date" class="form-control" id="expense-date" required />
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100">Add</button>
                 </div>
-
             </form>
             <div class="table-responsive">
                 <table class="table table-striped table-hover" id="expense-table">
@@ -137,10 +133,8 @@
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="expense-list">
-                    </tbody>
+                    <tbody id="expense-list"></tbody>
                 </table>
-
             </div>
             <div class="justify-content-between d-flex mt-4">
                 <div class="dropdown mt-auto">
@@ -149,9 +143,13 @@
                         This Month
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dateDropdown">
-                        <li><button class="dropdown-item chartTime">This Month</button></li>
-                        <li><button class="dropdown-item chartTime">This Year</button></li>
-                        <li><button class="dropdown-item chartTime">All Time</button>
+                        <li>
+                            <button class="dropdown-item chartTime">This Month</button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item chartTime">This Year</button>
+                        </li>
+                        <li><button class="dropdown-item chartTime">All Time</button></li>
                     </ul>
                 </div>
                 <div id="total-expense" class="text-end mt-4">
@@ -159,13 +157,11 @@
                 </div>
             </div>
 
-            <div id="canvas-container" style="position: relative;  width: 100%;">
+            <div id="canvas-container" style="position: relative; width: 100%">
                 <canvas id="chart"></canvas>
             </div>
-
         </div>
     </div>
-
 
     <!-- Barcode modal -->
     <div class="modal fade" id="modalBarcode" tabindex="-1" aria-labelledby="modalBarcode" aria-hidden="true"
@@ -180,12 +176,13 @@
                     <img id="barcode" alt="80000532" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Close
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!--add category modal-->
     <div class="modal fade" id="modalAddCategory" tabindex="-1" aria-labelledby="modalAddCategory" aria-hidden="true"
@@ -198,21 +195,22 @@
                 </div>
                 <div class="modal-body">
                     <div class="justify-content-between d-flex mb-2">
-                        <input type="text" class="form-control me-2" placeholder="Category Name">
-                        <input type="color" class="form-control form-control-color" placeholder="Color">
+                        <input type="text" class="form-control me-2" placeholder="Category Name" />
+                        <input type="color" class="form-control form-control-color" placeholder="Color" />
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <img src="" alt="" class="img-thumbnail mx-2 mb-1 w-20 h-20" width="40" height="40">
-                        <input type="url" class="form-control mb-2" placeholder="URL">
-
+                        <img src="" alt="" class="img-thumbnail mx-2 mb-1 w-20 h-20" width="40" height="40" />
+                        <input type="url" class="form-control mb-2" placeholder="URL" />
                     </div>
-                    <input type="text" class="form-control mb-2" placeholder="Member Card">
-
-
+                    <input type="text" class="form-control mb-2" placeholder="Member Card" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="modalAddCategoryBtn">Add</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="modalAddCategoryBtn">
+                        Add
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
@@ -223,27 +221,33 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditCategoryTitle">Edit Category</h5>
+                    <h5 class="modal-title" id="modalEditCategoryTitle">
+                        Edit Category
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="justify-content-between d-flex mb-2">
-                        <input type="text" class="form-control me-2" placeholder="Category Name">
-                        <input type="color" class="form-control form-control-color" placeholder="Color">
+                        <input type="text" class="form-control me-2" placeholder="Category Name" />
+                        <input type="color" class="form-control form-control-color" placeholder="Color" />
                     </div>
                     <div class="mb-2 d-flex justify-content-between">
-                        <img src="" alt="" class="img-thumbnail mx-2 mb-1 w-20 h-20" width="40" height="40">
-                        <input type="url" class="form-control mb-2" placeholder="URL">
-
+                        <img src="" alt="" class="img-thumbnail mx-2 mb-1 w-20 h-20" width="40" height="40" />
+                        <input type="url" class="form-control mb-2" placeholder="URL" />
                     </div>
-                    <input type="text" class="form-control mb-2" placeholder="Member Card">
-
+                    <input type="text" class="form-control mb-2" placeholder="Member Card" />
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
-                    <button type="button" class="btn btn-danger" id="deleteCategory">Delete</button>
+                    <button type="button" class="btn btn-danger" id="deleteCategory">
+                        Delete
+                    </button>
                     <div class="d-flex">
-                        <button type="button" class="btn btn-success me-2" id="modalEditCategoryBtn">Save</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success me-2" id="modalEditCategoryBtn">
+                            Save
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cancel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -262,151 +266,228 @@
                     <p id="modalConfirmMessage">Message</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="modalYesBtn">Ok</button>
-                    <button type="button" class="btn btn-secondary" id="modalNoBtn"
-                        data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="modalYesBtn">
+                        Ok
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="modalNoBtn" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const ctx = document.getElementById('chart').getContext('2d');
-        var chartTime = "This Month";
-        var myChart = new Chart(ctx, {});
+        const ctx = document.getElementById("chart").getContext("2d");
+        var chartTime = "This Month"; //This Month, This Year, All Time
+        var myChart = new Chart(ctx, {}); // empty chart, that will be updated later
 
-
+        /**
+         * Changes the theme of the page
+         * @param {string} theme - The theme to change to. Can be 'dark' or 'light'
+         * @returns {void}
+         */
         function changeTheme(theme) {
-            var itemTheme = document.getElementById("itemTheme")
+            var itemTheme = document.getElementById("itemTheme"); //icon to change
             if (!theme) {
-                var themeStorage = localStorage.getItem('theme');
-                if (themeStorage != "dark") {
-                    document.body.setAttribute('data-bs-theme', "dark");
-                    itemTheme.className = "bi bi-sun-fill"
-                    localStorage.setItem('theme', "dark");
+                var themeStorage = localStorage.getItem("theme"); //get theme from local storage, if you want you can check it doing Right Click -> Inspect -> Application -> Local Storage
+                if (themeStorage != "dark") {  //if theme is not dark, change to dark
+                    document.body.setAttribute("data-bs-theme", "dark"); //change theme to dark
+                    itemTheme.className = "bi bi-sun-fill"; //change icon to sun
+                    localStorage.setItem("theme", "dark"); //save theme to local storage
                 } else {
-                    document.body.setAttribute('data-bs-theme', "light");
-                    itemTheme.className = "bi bi-moon-stars-fill"
-                    localStorage.setItem('theme', "light")
+                    document.body.setAttribute("data-bs-theme", "light"); //Same here, but if theme is dark, change to light    
+                    itemTheme.className = "bi bi-moon-stars-fill";
+                    localStorage.setItem("theme", "light");
                 }
-            } else if (theme === 'dark' || theme === 'light') {
-                document.body.setAttribute('data-bs-theme', theme);
-                itemTheme.className = theme === 'dark' ? "bi bi-sun-fill" : "bi bi-moon-stars-fill";
-                localStorage.setItem('theme', theme);
+            } else if (theme === "dark" || theme === "light") {  //if theme is dark or light
+                document.body.setAttribute("data-bs-theme", theme); //change theme to the one passed as parameter
+                itemTheme.className = theme === "dark" ? "bi bi-sun-fill" : "bi bi-moon-stars-fill"; //change icon to sun or moon
+                localStorage.setItem("theme", theme); //save theme to local storage
             }
 
-            JsBarcode("#barcode", document.getElementById('barcode').alt, {
-                background: getComputedStyle(document.body).getPropertyValue('--bs-body-bg'),
-                lineColor: getComputedStyle(document.body).getPropertyValue('--bs-emphasis-color'),
-
-            })
-
-        }
-        function modalConfirm(title, messageHTML) {
-            return new Promise((resolve, reject) => {
-                const modal = new bootstrap.Modal(document.getElementById('modalConfirm'));
-                document.getElementById('modalConfirmTitle').innerText = title;
-                document.getElementById('modalConfirmMessage').innerHTML = messageHTML;
-
-                document.getElementById('modalConfirm').addEventListener('hide.bs.modal', event => {
-                    resolve(false);
-                })
-
-                const yesBtn = document.getElementById('modalYesBtn');
-                const noBtn = document.getElementById('modalNoBtn');
-
-                yesBtn.onclick = () => {
-                    resolve(true);
-                    modal.hide();
-                };
-
-                noBtn.onclick = () => {
-                    resolve(false);
-                    modal.hide();
-                };
-
-                modal.show();
+            JsBarcode("#barcode", document.getElementById("barcode").alt, { //recreate barcode
+                background: getComputedStyle(document.body).getPropertyValue( //get background color from bootstrap 
+                    "--bs-body-bg"
+                ),
+                lineColor: getComputedStyle(document.body).getPropertyValue( //get line color from bootstrap
+                    "--bs-emphasis-color"
+                ),
             });
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            const expenseForm = document.getElementById('expense-form');
-            const expenseNameInput = document.getElementById('expense-name');
-            const expenseAmountInput = document.getElementById('expense-amount');
-            const expenseDateInput = document.getElementById('expense-date');
-            const expenseList = document.getElementById('expense-list');
-            const totalAmountSpan = document.getElementById('total-amount');
-            const sidebar = document.getElementById('sidebar-wrapper');
-            const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
 
 
+        /**
+         * The confirm() function but with a bootstrap modal instead of the default browser dialog
+         * @param {string} title - The title of the modal
+         * @param {string} messageHTML - The message of the modal, can be HTML
+         * @returns {Promise<boolean>} - A promise that resolves to true if the user clicks on the "Ok" button, false if the user clicks on the "Cancel" button
+         */
+        function modalConfirm(title, messageHTML) {
+            return new Promise((resolve, reject) => { // Create a promise so we can wait for the user to click on a button 
+                const modal = new bootstrap.Modal(
+                    document.getElementById("modalConfirm")
+                ); //Get the modal 
+                document.getElementById("modalConfirmTitle").innerText = title; //Set the title of the modal
+                document.getElementById("modalConfirmMessage").innerHTML = messageHTML; //Set the message of the modal
 
+                document.getElementById("modalConfirm").addEventListener("hide.bs.modal", (event) => { resolve(false); }); //If the modal is closed, resolve the promise with false
 
-            var currentCategory = "all";
-            var categories = [
-                {
+                const yesBtn = document.getElementById("modalYesBtn"); //Get the "Ok" button
+                const noBtn = document.getElementById("modalNoBtn"); //Get the "Cancel" button
+
+                yesBtn.onclick = () => { //If the user clicks on the "Ok" button
+                    resolve(true); //Resolve the promise with true
+                    modal.hide(); //Hide the modal
+                };
+
+                noBtn.onclick = () => { //If the user clicks on the "Cancel" button
+                    resolve(false); //Resolve the promise with false
+                    modal.hide(); //Hide the modal
+                };
+
+                modal.show(); //Show the modal
+            });
+        }
+        document.addEventListener("DOMContentLoaded", () => { //When the page is loaded we can start executing our code
+            const expenseForm = document.getElementById("expense-form"); //Get the form
+            const expenseNameInput = document.getElementById("expense-name"); //Get the input for the name
+            const expenseAmountInput = document.getElementById("expense-amount"); //Get the input for the amount
+            const expenseDateInput = document.getElementById("expense-date"); //Get the input for the date
+            const expenseList = document.getElementById("expense-list"); //Get the table body
+            const totalAmountSpan = document.getElementById("total-amount"); //Get the span that shows the total amount
+            const sidebar = document.getElementById("sidebar-wrapper"); //Get the sidebar
+            const toggleSidebarBtn = document.getElementById("toggle-sidebar-btn"); //Get the button that toggles the sidebar
+
+            var currentCategory = "all"; //The current category that is being displayed
+            var categories = [ //The categories
+                { //The first category is "all", it will contain all the expenses from all the categories
                     name: "all",
                     url: null,
                     expenses: [],
-                    memberCard: null
+                    memberCard: null,
                 },
-            ]
+            ];
 
+            /**
+             * Get the favicon URL from a given URL
+             * @param {string} url - The URL to get the favicon from
+             * @returns {string} - The URL of the favicon
+             */
             function getFaviconUrl(url) {
-                if (!url) return '';
-                if (!url.startsWith('http')) {
-                    url = `http://${url}`;
+                if (!url) return ""; //If the URL is empty, return an empty string
+                if (!url.startsWith("http")) { //If the URL doesn't start with "http" or "https"
+                    url = `http://${url}`; //Add "http://" to the URL
                 }
-                const urlObj = new URL(url);
-                const faviconUrl = `http://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`;
-                return faviconUrl;
+                const urlObj = new URL(url); //Create a new URL object
+                const faviconUrl = `http://www.google.com/s2/favicons?domain=${urlObj.hostname}&sz=64`; //Create the URL of the favicon
+                return faviconUrl; //Return the URL of the favicon
             }
 
-            toggleSidebarBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('active');
-                toggleSidebarBtn.innerHTML = sidebar.classList.contains('active') ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>';
-                //move button,  like it is a part of the sidebar
-                let containsActive = sidebar.classList.contains('active');
-                for (let i = (containsActive ? 0 : 250); containsActive ? i < 250 : i > 0; containsActive ? i++ : i--) {
-                    setTimeout(() => {
-                        toggleSidebarBtn.style.left = `${i}px`;
-                    }, 0.9 * Math.abs(i - (containsActive ? 0 : 250)));
+            toggleSidebarBtn.addEventListener("click", () => { //When the user clicks on the button to toggle the sidebar (on small screens)
+                sidebar.classList.toggle("active"); //Toggle the "active" class on the sidebar
+                toggleSidebarBtn.innerHTML = sidebar.classList.contains("active") ? '<i class="bi bi-chevron-left"></i>' : '<i class="bi bi-chevron-right"></i>'; //Change the icon of the button
+                let containsActive = sidebar.classList.contains("active"); //Check if the sidebar contains the "active" class
+                for (let i = containsActive ? 0 : 250; containsActive ? i < 250 : i > 0; containsActive ? i++ : i--) { //Sort of animation to move the button
+                    setTimeout(() => {  //Set a timeout to move the button
+                        toggleSidebarBtn.style.left = `${i}px`; //Change the left position of the button
+                    }, 0.9 * Math.abs(i - (containsActive ? 0 : 250))); //Calculate the time to move the button
                 }
-
             });
 
-            let expenses = [];
-            let totalAmount = 0;
+            let totalAmount = 0; //The total amount of all the expenses
 
+            /**
+             * Update the total amount of all the expenses
+             * @returns {void}
+             */
             function updateTotal() {
-                totalAmountSpan.innerText = totalAmount.toFixed(2);
+                totalAmountSpan.innerText = totalAmount.toFixed(2); //Set the total amount in the span, toFixed(2) means that we want 2 decimal places
             }
 
-
+            /**
+             * Redraw the chart with the current data
+             * @returns {void}
+             */
             function drawChart() {
-                const datasets = [];
+                const datasets = []; //The datasets for the chart
 
-                if (currentCategory == "all") {
-                    categories.filter(cat => cat.name !== "all").forEach(cat => {
-                        const data = []; // {x: date, y: amount}
-                        cat.expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
-                            const index = data.findIndex(d => d.x === exp.date);
+                if (currentCategory == "all") { //If the current category is "all"
+                    categories
+                        .filter((cat) => cat.name !== "all") //Filter out the "all" category
+                        .forEach((cat) => { //For each category
+                            const data = []; //The data for the category {x: date, y: amount}
+                            cat.expenses
+                                .sort((a, b) => new Date(a.date) - new Date(b.date)) //Sort the expenses by date
+                                .forEach((exp) => { //For each expense
+                                    const index = data.findIndex((d) => d.x === exp.date); //Find the index of the date in the data
+                                    if (chartTime === "This Month") { //If the chart time is "This Month"
+                                        if (new Date(exp.date).getMonth() === new Date().getMonth()) { //Check if the expense is from this month
+                                            if (index === -1) { //If the date is not in the data
+                                                data.push({
+                                                    x: exp.date,
+                                                    y: exp.amount,
+                                                }); //Add the date and the amount to the data
+                                            } else {
+                                                data[index].y += exp.amount; //If the date is in the data, add the amount to the existing amount
+                                            }
+                                        }
+                                    } else if (chartTime === "This Year") { //Same as above but for "This Year"
+                                        if (new Date(exp.date).getFullYear() === new Date().getFullYear()) { //Check if the expense is from this year
+                                            if (index === -1) {
+                                                data.push({
+                                                    x: exp.date,
+                                                    y: exp.amount,
+                                                });
+                                            } else {
+                                                data[index].y += exp.amount;
+                                            }
+                                        }
+                                    } else { //If the chart time is "All Time" 
+                                        if (index === -1) {
+                                            data.push({
+                                                x: exp.date,
+                                                y: exp.amount,
+                                            });
+                                        } else {
+                                            data[index].y += exp.amount;
+                                        }
+                                    }
+                                });
+                            datasets.push({ //Add the dataset to the datasets array
+                                label: cat.name, //The label of the dataset is the name of the category
+                                data: data, //The data of the dataset
+                                borderColor: cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`), //The border color of the dataset
+                                fill: false, //Don't fill the area under the line
+                            });
+                        });
+                } else { //If the current category is not "all" (it's a specific category)
+                    const data = []; //Same as above but for a specific category
+                    categories
+                        .filter((cat) => cat.name === currentCategory)[0] //Filter out the category so it keeps only the one that has the same name as the current category
+                        .expenses.sort((a, b) => new Date(a.date) - new Date(b.date))
+                        .forEach((exp) => {
+                            const index = data.findIndex((d) => d.x === exp.date);
                             if (chartTime === "This Month") {
                                 if (new Date(exp.date).getMonth() === new Date().getMonth()) {
                                     if (index === -1) {
                                         data.push({
                                             x: exp.date,
-                                            y: exp.amount
+                                            y: exp.amount,
                                         });
                                     } else {
                                         data[index].y += exp.amount;
                                     }
                                 }
                             } else if (chartTime === "This Year") {
-                                if (new Date(exp.date).getFullYear() === new Date().getFullYear()) {
+                                if (
+                                    new Date(exp.date).getFullYear() ===
+                                    new Date().getFullYear()
+                                ) {
                                     if (index === -1) {
                                         data.push({
                                             x: exp.date,
-                                            y: exp.amount
+                                            y: exp.amount,
                                         });
                                     } else {
                                         data[index].y += exp.amount;
@@ -416,242 +497,247 @@
                                 if (index === -1) {
                                     data.push({
                                         x: exp.date,
-                                        y: exp.amount
+                                        y: exp.amount,
                                     });
                                 } else {
                                     data[index].y += exp.amount;
                                 }
                             }
                         });
-                        datasets.push({
-                            label: cat.name,
-                            data: data,
-                            borderColor: cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`),
-                            fill: false
-                        });
-                    });
-                } else {
-                    const data = [];
-                    categories.filter(cat => cat.name === currentCategory)[0].expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
-                        const index = data.findIndex(d => d.x === exp.date);
-                        if (chartTime === "This Month") {
-                            if (new Date(exp.date).getMonth() === new Date().getMonth()) {
-                                if (index === -1) {
-                                    data.push({
-                                        x: exp.date,
-                                        y: exp.amount
-                                    });
-                                } else {
-                                    data[index].y += exp.amount;
-                                }
-                            }
-                        } else if (chartTime === "This Year") {
-                            if (new Date(exp.date).getFullYear() === new Date().getFullYear()) {
-                                if (index === -1) {
-                                    data.push({
-                                        x: exp.date,
-                                        y: exp.amount
-                                    });
-                                } else {
-                                    data[index].y += exp.amount;
-                                }
-                            }
-                        } else {
-                            if (index === -1) {
-                                data.push({
-                                    x: exp.date,
-                                    y: exp.amount
-                                });
-                            } else {
-                                data[index].y += exp.amount;
-                            }
-                        }
-                    });
 
                     datasets.push({
                         label: currentCategory,
                         data: data,
-                        borderColor: categories.filter(cat => cat.name === currentCategory)[0].color ? categories.filter(cat => cat.name === currentCategory)[0].color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`),
-                        fill: false
+                        borderColor: categories.filter((cat) => cat.name === currentCategory)[0].color ? categories.filter((cat) => cat.name === currentCategory)[0].color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`), //The border color of the dataset
+                        fill: false, //Don't fill the area under the line
                     });
                 }
-                const config = {
-                    type: 'line',
-                    data: {
-                        datasets: datasets
+                const config = { //The config for the chart
+                    type: "line", //The type of the chart
+                    data: { 
+                        datasets: datasets, //The datasets
                     },
                     options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                        scales: { 
+                            y: { 
+                                beginAtZero: true, //Start the y-axis at 0
                             },
                             xAxes: {
-                                type: 'time',
+                                type: "time", //The x-axis is a time axis
                                 time: {
-                                    unit: 'day'
-                                }
-                            }
+                                    unit: "day", //The unit of the time axis is "day"
+                                },
+                            },
                         },
                         interaction: {
-                            beforeTitle: "Expenses",
-
+                            beforeTitle: "Expenses", //The title of the tooltip
                         },
-                        responsive: true,
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
+                        responsive: true, 
+                        plugins: { 
+                            tooltip: { 
+                                callbacks: { 
+                                    label: function (context) { 
+                                        let label = context.dataset.label || "";  //The label of the dataset
 
-                                        let label = context.dataset.label || '';
-
-                                        if (label) {
-                                            label += ': ';
+                                        if (label) { 
+                                            label += ": "; //Add a colon to the label
                                         }
-                                        if (context.parsed.y !== null) {
-                                            label += context.parsed.y.toFixed(2) + "€"
+                                        if (context.parsed.y !== null) { 
+                                            label += context.parsed.y.toFixed(2) + "€"; //Add the amount to the label with 2 decimal places
                                         }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                                        return label; //Return the label
+                                    },
+                                },
+                            },
+                        },
+                    },
                 };
 
-                myChart.destroy();
-                myChart = new Chart(ctx, config);
-                resizeCanvas();
+                myChart.destroy(); //Delete the old chart
+                myChart = new Chart(ctx, config); //Create a new chart with the new config
+                resizeCanvas(); //Resize the canvas 
             }
 
-
-
-            function displayExpense() {
-                const currentCat = categories.filter(c => c.name === currentCategory)[0];
-                expenseList.innerHTML = '';
+            function displayExpense() { 
+                const currentCat = categories.filter(
+                    (c) => c.name === currentCategory
+                )[0];
+                expenseList.innerHTML = "";
                 totalAmount = 0;
 
-                currentCat.expenses.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(exp => {
-                    const color = categories.filter(cat => cat.name === exp.category)[0].color ? categories.filter(cat => cat.name === exp.category)[0].color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
+                currentCat.expenses
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .forEach((exp) => {
+                        const color = categories.filter(
+                            (cat) => cat.name === exp.category
+                        )[0].color
+                            ? categories.filter((cat) => cat.name === exp.category)[0].color
+                            : getComputedStyle(document.body).getPropertyValue(
+                                `--bs-primary`
+                            );
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
                         <td>${exp.name}</td>
-                        <td><span class="badge bg-${exp.amount > 0 ? 'danger' : 'success'}">${exp.amount.toFixed(2)}€</span></td>
+                        <td><span class="badge bg-${exp.amount > 0 ? "danger" : "success"
+                            }">${exp.amount.toFixed(2)}€</span></td>
                         <td>${exp.date}</td>
-                        <td><span class="badge" style="background-color: ${color}; color: ${determineTextColor(color)}">${exp.category}</span></td>
+                        <td><span class="badge" style="background-color: ${color}; color: ${determineTextColor(
+                                color
+                            )}">${exp.category}</span></td>
                         <td>
                             <button class="btn btn-primary btn-sm"><i class="bi bi-pencil"></i></button>
                             <button class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
                         </td>
                     `;
-                    tr.querySelector('button.btn-danger').addEventListener('click', () => {
-                        const response = modalConfirm('Delete Expense', `Are you sure you want to delete the expense? <br> <strong>${exp.name} - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? '' : ` - ${exp.category}`}</strong>`);
-                        response.then((result) => {
-                            if (result) {
-                                categories = categories.map(cat => {
-                                    if (cat.name === exp.category) {
-                                        cat.expenses = cat.expenses.filter(e => e !== exp);
+                        tr.querySelector("button.btn-danger").addEventListener(
+                            "click",
+                            () => {
+                                const response = modalConfirm(
+                                    "Delete Expense",
+                                    `Are you sure you want to delete the expense? <br> <strong>${exp.name
+                                    } - €${exp.amount.toFixed(2)}${currentCategory !== "all" ? "" : ` - ${exp.category}`
+                                    }</strong>`
+                                );
+                                response.then((result) => {
+                                    if (result) {
+                                        categories = categories.map((cat) => {
+                                            if (cat.name === exp.category) {
+                                                cat.expenses = cat.expenses.filter((e) => e !== exp);
+                                            }
+                                            return cat;
+                                        });
+
+                                        updateAllCat();
+                                        updateCurrentCategory(currentCategory);
+                                        localStorage.setItem(
+                                            "expenses",
+                                            JSON.stringify(
+                                                categories.filter((cat) => cat.name !== "all")
+                                            )
+                                        );
                                     }
-                                    return cat;
                                 });
-
-                                updateAllCat();
-                                updateCurrentCategory(currentCategory);
-                                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
                             }
-                        });
-                    });
+                        );
 
-                    function changeItem() {
+                        function changeItem() {
+                            var inputDiv = document.createElement("div");
+                            var inputName = document.createElement("input");
+                            inputName.type = "text";
+                            inputName.defaultValue = exp.name;
+                            inputName.className = "form-control mb-2";
+                            inputName.placeholder = "Expense Name";
+                            inputDiv.appendChild(inputName);
 
-                        var inputDiv = document.createElement('div');
-                        var inputName = document.createElement('input');
-                        inputName.type = 'text';
-                        inputName.defaultValue = exp.name;
-                        inputName.className = 'form-control mb-2';
-                        inputName.placeholder = 'Expense Name';
-                        inputDiv.appendChild(inputName);
+                            var inputAmount = document.createElement("input");
+                            inputAmount.type = "number";
+                            inputAmount.defaultValue = exp.amount;
+                            inputAmount.step = "0.01";
+                            inputAmount.className = "form-control mb-2";
+                            inputAmount.placeholder = "Amount";
+                            inputDiv.appendChild(inputAmount);
 
-                        var inputAmount = document.createElement('input');
-                        inputAmount.type = 'number';
-                        inputAmount.defaultValue = exp.amount;
-                        inputAmount.step = '0.01';
-                        inputAmount.className = 'form-control mb-2';
-                        inputAmount.placeholder = 'Amount';
-                        inputDiv.appendChild(inputAmount);
+                            var inputDate = document.createElement("input");
+                            inputDate.type = "date";
+                            inputDate.defaultValue = exp.date;
+                            inputDate.className = "form-control mb-2";
+                            inputDiv.appendChild(inputDate);
 
-                        var inputDate = document.createElement('input');
-                        inputDate.type = 'date';
-                        inputDate.defaultValue = exp.date;
-                        inputDate.className = 'form-control mb-2';
-                        inputDiv.appendChild(inputDate);
+                            var selectCategory = document.createElement("select");
+                            selectCategory.className = "form-select mb-2";
+                            categories
+                                .filter((cat) => cat.name !== "all")
+                                .sort((a, b) => (a.name == exp.category ? -1 : 1))
+                                .forEach((cat) => {
+                                    const option = document.createElement("option");
+                                    option.value = cat.name;
+                                    option.innerText = cat.name;
+                                    selectCategory.appendChild(option);
+                                });
+                            inputDiv.appendChild(selectCategory);
 
-                        var selectCategory = document.createElement('select');
-                        selectCategory.className = 'form-select mb-2';
-                        categories.filter(cat => cat.name !== "all").sort((a, b) => a.name == exp.category ? -1 : 1).forEach(cat => {
-                            const option = document.createElement('option');
-                            option.value = cat.name;
-                            option.innerText = cat.name;
-                            selectCategory.appendChild(option);
-                        });
-                        inputDiv.appendChild(selectCategory);
-
-                        const response = modalConfirm('Edit Expense', inputDiv.innerHTML);
-                        response.then((result) => {
-                            if (result) {
-                                const newName = document.querySelector('#modalConfirm input[placeholder="Expense Name"]').value;
-                                const newAmount = parseFloat(document.querySelector('#modalConfirm input[placeholder="Amount"]').value);
-                                const newDate = document.querySelector('#modalConfirm input[type="date"]').value;
-                                const newCategory = document.querySelector('#modalConfirm select').value;
-                                if (newName && !isNaN(newAmount) && newDate) {
-                                    //if category changed, remove from current category and add to new category
-                                    if (newCategory !== exp.category) {
-                                        categories = categories.map(cat => {
-                                            if (cat.name === exp.category) {
-                                                cat.expenses = cat.expenses.filter(e => e !== exp);
-                                            }
-                                            if (cat.name === newCategory) {
-                                                cat.expenses.push({
-                                                    name: newName,
-                                                    amount: newAmount,
-                                                    date: newDate,
-                                                    category: newCategory
-                                                });
-                                            }
-                                            return cat;
-                                        });
-                                    } else {
-                                        categories = categories.map(cat => {
-                                            if (cat.name === exp.category) {
-                                                cat.expenses = cat.expenses.map(e => {
-                                                    if (e === exp) {
-                                                        e.name = newName;
-                                                        e.amount = newAmount;
-                                                        e.date = newDate;
-                                                    }
-                                                    return e;
-                                                });
-                                            }
-                                            return cat;
-                                        });
+                            const response = modalConfirm(
+                                "Edit Expense",
+                                inputDiv.innerHTML
+                            );
+                            response.then((result) => {
+                                if (result) {
+                                    const newName = document.querySelector(
+                                        '#modalConfirm input[placeholder="Expense Name"]'
+                                    ).value;
+                                    const newAmount = parseFloat(
+                                        document.querySelector(
+                                            '#modalConfirm input[placeholder="Amount"]'
+                                        ).value
+                                    );
+                                    const newDate = document.querySelector(
+                                        '#modalConfirm input[type="date"]'
+                                    ).value;
+                                    const newCategory = document.querySelector(
+                                        "#modalConfirm select"
+                                    ).value;
+                                    if (newName && !isNaN(newAmount) && newDate) {
+                                        //if category changed, remove from current category and add to new category
+                                        if (newCategory !== exp.category) {
+                                            categories = categories.map((cat) => {
+                                                if (cat.name === exp.category) {
+                                                    cat.expenses = cat.expenses.filter(
+                                                        (e) => e !== exp
+                                                    );
+                                                }
+                                                if (cat.name === newCategory) {
+                                                    cat.expenses.push({
+                                                        name: newName,
+                                                        amount: newAmount,
+                                                        date: newDate,
+                                                        category: newCategory,
+                                                    });
+                                                }
+                                                return cat;
+                                            });
+                                        } else {
+                                            categories = categories.map((cat) => {
+                                                if (cat.name === exp.category) {
+                                                    cat.expenses = cat.expenses.map((e) => {
+                                                        if (e === exp) {
+                                                            e.name = newName;
+                                                            e.amount = newAmount;
+                                                            e.date = newDate;
+                                                        }
+                                                        return e;
+                                                    });
+                                                }
+                                                return cat;
+                                            });
+                                        }
+                                        updateAllCat();
+                                        updateCurrentCategory(currentCategory);
+                                        localStorage.setItem(
+                                            "expenses",
+                                            JSON.stringify(
+                                                categories.filter((cat) => cat.name !== "all")
+                                            )
+                                        );
+                                        tr.querySelector(
+                                            "button.btn-primary"
+                                        ).removeEventListener("click", changeItem);
                                     }
-                                    updateAllCat();
-                                    updateCurrentCategory(currentCategory);
-                                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-                                    tr.querySelector('button.btn-primary').removeEventListener('click', changeItem);
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
 
-                    tr.querySelector('button.btn-primary').addEventListener('click', changeItem);
+                        tr.querySelector("button.btn-primary").addEventListener(
+                            "click",
+                            changeItem
+                        );
 
-                    expenseList.appendChild(tr);
-                    totalAmount += exp.amount;
-                });
+                        expenseList.appendChild(tr);
+                        totalAmount += exp.amount;
+                    });
                 updateTotal();
             }
 
-            expenseForm.addEventListener('submit', (e) => {
+            expenseForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 const name = expenseNameInput.value;
                 const amount = parseFloat(expenseAmountInput.value);
@@ -661,9 +747,9 @@
                         name,
                         amount,
                         date,
-                        category: currentCategory
+                        category: currentCategory,
                     };
-                    categories = categories.map(cat => {
+                    categories = categories.map((cat) => {
                         if (cat.name === currentCategory) {
                             cat.expenses.push(newExpense);
                         }
@@ -671,43 +757,42 @@
                     });
                     updateAllCat();
                     updateCurrentCategory(currentCategory);
-                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-                    expenseNameInput.value = '';
-                    expenseAmountInput.value = '';
+                    localStorage.setItem(
+                        "expenses",
+                        JSON.stringify(categories.filter((cat) => cat.name !== "all"))
+                    );
+                    expenseNameInput.value = "";
+                    expenseAmountInput.value = "";
                 }
             });
 
             /*
-            { 
-                name: 'Amazon', //category
-                url: 'https://www.amazon.it', //can be null
-                expenses: [ 
-                    { name: 'Book', amount: 20, date: '2024-07-27', category: 'Amazon' },
-                    { name: 'Headphones', amount: 50, date: '2024-07-27', category: 'Amazon' },
-                ],
-                memberCard: "80000532", //can be null
+                { 
+                    name: 'Amazon', //category
+                    url: 'https://www.amazon.it', //can be null
+                    expenses: [ 
+                        { name: 'Book', amount: 20, date: '2024-07-27', category: 'Amazon' },
+                        { name: 'Headphones', amount: 50, date: '2024-07-27', category: 'Amazon' },
+                    ],
+                    memberCard: "80000532", //can be null
+    
+                }
+                */
 
-            }
-            */
-
-            const savedExpenses = JSON.parse(localStorage.getItem('expenses'));
-
+            const savedExpenses = JSON.parse(localStorage.getItem("expenses"));
 
             if (savedExpenses) {
                 categories.push(...savedExpenses);
             }
 
             function updateAllCat() {
-                var catt = categories.filter(cat => cat.name === "all")[0];
+                var catt = categories.filter((cat) => cat.name === "all")[0];
                 catt.expenses = [];
-                categories.forEach(cat => {
+                categories.forEach((cat) => {
                     if (cat.name !== "all") {
                         catt.expenses.push(...cat.expenses);
                     }
                 });
-
-
-
             }
 
             function toRGB(hex) {
@@ -721,149 +806,185 @@
 
             function determineTextColor(hex) {
                 const rgb = toRGB(hex);
-                const brightness = Math.round(((rgb[0] * 299) +
-                    (rgb[1] * 587) +
-                    (rgb[2] * 114)) / 1000);
-                return (brightness > 125) ? 'black' : 'white';
+                const brightness = Math.round(
+                    (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+                );
+                return brightness > 125 ? "black" : "white";
             }
 
-            function adjustColor(hex) { //Function to adjust the color of the category based on theme, if it is too dark or too light
-                const theme = localStorage.getItem('theme');
+            function adjustColor(hex) {
+                //Function to adjust the color of the category based on theme, if it is too dark or too light
+                const theme = localStorage.getItem("theme");
                 const rgb = toRGB(hex);
-                const brightness = Math.round(((rgb[0] * 299) +
-                    (rgb[1] * 587) +
-                    (rgb[2] * 114)) / 1000);
-                if (theme === 'dark') {
+                const brightness = Math.round(
+                    (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000
+                );
+                if (theme === "dark") {
                     if (brightness < 60) {
-                        return '#ffffff';
+                        return "#ffffff";
                     }
                 } else {
                     if (brightness > 125) {
-                        return '#000000';
+                        return "#000000";
                     }
                 }
-                return hex;            
+                return hex;
             }
 
             function displayCategories() {
-                document.getElementById('categories').innerHTML = '';
-                categories.forEach(cat => {
-                    const color = cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
-                    const li = document.createElement('li');
-                    li.className = 'd-flex justify-content-between align-items-center nav-item ';
-                    const a = document.createElement('a');
-                    a.className = 'w-100 nav-link';
-                    const img = document.createElement('img');
-                    img.src = cat.url ? getFaviconUrl(cat.url) : '';
+                document.getElementById("categories").innerHTML = "";
+                categories.forEach((cat) => {
+                    const color = cat.color
+                        ? cat.color
+                        : getComputedStyle(document.body).getPropertyValue(
+                            `--bs-primary`
+                        );
+                    const li = document.createElement("li");
+                    li.className =
+                        "d-flex justify-content-between align-items-center nav-item ";
+                    const a = document.createElement("a");
+                    a.className = "w-100 nav-link";
+                    const img = document.createElement("img");
+                    img.src = cat.url ? getFaviconUrl(cat.url) : "";
                     img.width = 20;
-                    img.className = 'me-2';
+                    img.className = "me-2";
                     a.appendChild(img);
                     a.innerHTML += cat.name == "all" ? "All" : cat.name;
 
-
                     if (cat.name == currentCategory) {
-                        a.classList.add('active');
+                        a.classList.add("active");
                         a.style.backgroundColor = color;
                         a.style.color = determineTextColor(color);
                     } else {
                         a.style.color = adjustColor(color);
-
                     }
 
-
                     if (cat.name != "all") {
-                        const span = document.createElement('span');
+                        const span = document.createElement("span");
                         span.innerHTML = `<i class="editIco bi bi-pencil-square float-end"></i>`;
                         a.appendChild(span);
                     }
 
                     li.appendChild(a);
                     if (cat.name != "all") {
-                        li.querySelector('.bi-pencil-square').addEventListener('click', () => {
-                            const modal = new bootstrap.Modal(document.getElementById('modalEditCategory'));
-                            const color = document.querySelector('#modalEditCategory .form-control-color');
+                        li.querySelector(".bi-pencil-square").addEventListener(
+                            "click",
+                            () => {
+                                const modal = new bootstrap.Modal(
+                                    document.getElementById("modalEditCategory")
+                                );
+                                const color = document.querySelector(
+                                    "#modalEditCategory .form-control-color"
+                                );
 
-                            modal.show();
-                            const name = document.querySelector('#modalEditCategory input[placeholder="Category Name"]');
-                            const url = document.querySelector('#modalEditCategory input[type="url"]');
-                            const img = document.querySelector('#modalEditCategory img');
-                            img.src = cat.url ? getFaviconUrl(cat.url) : '';
+                                modal.show();
+                                const name = document.querySelector(
+                                    '#modalEditCategory input[placeholder="Category Name"]'
+                                );
+                                const url = document.querySelector(
+                                    '#modalEditCategory input[type="url"]'
+                                );
+                                const img = document.querySelector("#modalEditCategory img");
+                                img.src = cat.url ? getFaviconUrl(cat.url) : "";
 
-                            var typingTimer; //timer identifier
-                            var doneTypingInterval = 500; //time in ms, 5 second for example
-                            url.addEventListener('keyup', () => {
-                                clearTimeout(typingTimer);
-                                if (url.value) {
-                                    typingTimer = setTimeout(() => {
-                                        img.src = getFaviconUrl(url.value);
-                                    }, doneTypingInterval);
-                                }
-                            });
-
-
-                            const memberCard = document.querySelector('#modalEditCategory input[placeholder="Member Card"]');
-                            name.value = cat.name;
-                            url.value = cat.url;
-                            memberCard.value = cat.memberCard;
-                            color.value = cat.color ? cat.color : getComputedStyle(document.body).getPropertyValue(`--bs-primary`);
-                            const deleteCategory = document.getElementById('deleteCategory');
-                            deleteCategory.addEventListener('click', async () => {
-                                const confirm = await modalConfirm('Delete Category', `Are you sure you want to delete the category <strong>${cat.name}</strong>?`);
-                                if (confirm) {
-                                    categories = categories.filter(c => c.name !== cat.name);
-                                    updateAllCat();
-                                    updateCurrentCategory("all");
-                                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-                                    modal.hide();
-                                    deleteCategory.removeEventListener('click', this);
-                                }
-                            });
-                            const editCategoryBtn = document.getElementById('modalEditCategoryBtn');
-                            function deleteCat() {
-                                const newName = name.value;
-                                const newUrl = url.value;
-                                const newMemberCard = memberCard.value;
-                                const newColor = color.value;
-                                if (!newName) {
-                                    name.classList.add('is-invalid');
-                                    return;
-                                } else name.classList.remove('is-invalid');
-                                const newCategory = {
-                                    name: newName,
-                                    color: newColor,
-                                    url: newUrl,
-                                    expenses: cat.expenses,
-                                    memberCard: newMemberCard
-                                };
-                                categories = categories.map(c => {
-                                    if (c.name === cat.name) {
-                                        return newCategory;
+                                var typingTimer; //timer identifier
+                                var doneTypingInterval = 500; //time in ms, 5 second for example
+                                url.addEventListener("keyup", () => {
+                                    clearTimeout(typingTimer);
+                                    if (url.value) {
+                                        typingTimer = setTimeout(() => {
+                                            img.src = getFaviconUrl(url.value);
+                                        }, doneTypingInterval);
                                     }
-                                    return c;
                                 });
-                                updateAllCat();
-                                updateCurrentCategory(newCategory.name);
-                                localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-                                modal.hide();
+
+                                const memberCard = document.querySelector(
+                                    '#modalEditCategory input[placeholder="Member Card"]'
+                                );
+                                name.value = cat.name;
+                                url.value = cat.url;
+                                memberCard.value = cat.memberCard;
+                                color.value = cat.color
+                                    ? cat.color
+                                    : getComputedStyle(document.body).getPropertyValue(
+                                        `--bs-primary`
+                                    );
+                                const deleteCategory =
+                                    document.getElementById("deleteCategory");
+                                deleteCategory.addEventListener("click", async () => {
+                                    const confirm = await modalConfirm(
+                                        "Delete Category",
+                                        `Are you sure you want to delete the category <strong>${cat.name}</strong>?`
+                                    );
+                                    if (confirm) {
+                                        categories = categories.filter(
+                                            (c) => c.name !== cat.name
+                                        );
+                                        updateAllCat();
+                                        updateCurrentCategory("all");
+                                        localStorage.setItem(
+                                            "expenses",
+                                            JSON.stringify(
+                                                categories.filter((cat) => cat.name !== "all")
+                                            )
+                                        );
+                                        modal.hide();
+                                        deleteCategory.removeEventListener("click", this);
+                                    }
+                                });
+                                const editCategoryBtn = document.getElementById(
+                                    "modalEditCategoryBtn"
+                                );
+                                function deleteCat() {
+                                    const newName = name.value;
+                                    const newUrl = url.value;
+                                    const newMemberCard = memberCard.value;
+                                    const newColor = color.value;
+                                    if (!newName) {
+                                        name.classList.add("is-invalid");
+                                        return;
+                                    } else name.classList.remove("is-invalid");
+                                    const newCategory = {
+                                        name: newName,
+                                        color: newColor,
+                                        url: newUrl,
+                                        expenses: cat.expenses,
+                                        memberCard: newMemberCard,
+                                    };
+                                    categories = categories.map((c) => {
+                                        if (c.name === cat.name) {
+                                            return newCategory;
+                                        }
+                                        return c;
+                                    });
+                                    updateAllCat();
+                                    updateCurrentCategory(newCategory.name);
+                                    localStorage.setItem(
+                                        "expenses",
+                                        JSON.stringify(
+                                            categories.filter((cat) => cat.name !== "all")
+                                        )
+                                    );
+                                    modal.hide();
+                                }
+
+                                editCategoryBtn.addEventListener("click", deleteCat);
+
+                                document
+                                    .getElementById("modalEditCategory")
+                                    .addEventListener("hide.bs.modal", () => {
+                                        editCategoryBtn.removeEventListener("click", deleteCat);
+                                    });
                             }
-
-                            editCategoryBtn.addEventListener('click', deleteCat);
-
-                            document.getElementById('modalEditCategory').addEventListener('hide.bs.modal', () => {
-                                editCategoryBtn.removeEventListener('click', deleteCat);
-                            });
-
-                        });
-
+                        );
                     }
-                    li.addEventListener('click', (e) => {
+                    li.addEventListener("click", (e) => {
                         e.preventDefault();
                         currentCategory = cat.name;
                         updateAllCat();
                         updateCurrentCategory(cat.name);
                     });
-                    document.getElementById('categories').appendChild(li);
-
+                    document.getElementById("categories").appendChild(li);
                 });
             }
 
@@ -872,51 +993,60 @@
             function updateCurrentCategory(cat) {
                 currentCategory = cat;
                 if (cat == "all") {
-                    document.getElementById('expense-form').hidden = true;
+                    document.getElementById("expense-form").hidden = true;
                 } else {
-                    document.getElementById('expense-form').hidden = false;
+                    document.getElementById("expense-form").hidden = false;
                 }
-                const currentCat = categories.filter(c => c.name === cat)[0];
-                if (cat != "all") currentCat.expenses = currentCat.expenses.map(exp => {
-                    exp.category = cat;
-                    return exp;
-                });
-                expenseList.innerHTML = '';
+                const currentCat = categories.filter((c) => c.name === cat)[0];
+                if (cat != "all")
+                    currentCat.expenses = currentCat.expenses.map((exp) => {
+                        exp.category = cat;
+                        return exp;
+                    });
+                expenseList.innerHTML = "";
                 totalAmount = 0;
                 if (!currentCat.memberCard) {
-                    document.getElementById('barcode').hidden = true;
-                    document.getElementById('barcodeBtn').hidden = true;
+                    document.getElementById("barcode").hidden = true;
+                    document.getElementById("barcodeBtn").hidden = true;
                 } else {
-                    document.getElementById('barcode').hidden = false;
-                    document.getElementById('barcodeBtn').hidden = false;
-                    document.getElementById('barcode').alt = currentCat.memberCard;
+                    document.getElementById("barcode").hidden = false;
+                    document.getElementById("barcodeBtn").hidden = false;
+                    document.getElementById("barcode").alt = currentCat.memberCard;
                     JsBarcode("#barcode", currentCat.memberCard, {
-                        background: getComputedStyle(document.body).getPropertyValue('--bs-body-bg'),
-                        lineColor: getComputedStyle(document.body).getPropertyValue('--bs-emphasis-color'),
-
-                    })
+                        background: getComputedStyle(document.body).getPropertyValue(
+                            "--bs-body-bg"
+                        ),
+                        lineColor: getComputedStyle(document.body).getPropertyValue(
+                            "--bs-emphasis-color"
+                        ),
+                    });
                 }
 
                 displayExpense();
                 updateTotal();
                 displayCategories();
                 drawChart();
-
             }
 
             updateCurrentCategory(currentCategory);
 
-            const addCategoryBtn = document.getElementById('add-category');
-            addCategoryBtn.addEventListener('click', () => {
-                const modal = new bootstrap.Modal(document.getElementById('modalAddCategory'));
-                const color = document.querySelector('#modalAddCategory .form-control-color');
-                const url = document.querySelector('#modalAddCategory input[type="url"]')
-                const img = document.querySelector('#modalAddCategory img');
-                img.src = '';
+            const addCategoryBtn = document.getElementById("add-category");
+            addCategoryBtn.addEventListener("click", () => {
+                const modal = new bootstrap.Modal(
+                    document.getElementById("modalAddCategory")
+                );
+                const color = document.querySelector(
+                    "#modalAddCategory .form-control-color"
+                );
+                const url = document.querySelector(
+                    '#modalAddCategory input[type="url"]'
+                );
+                const img = document.querySelector("#modalAddCategory img");
+                img.src = "";
 
                 var typingTimer; //timer identifier
                 var doneTypingInterval = 500; //time in ms, 5 second for example
-                url.addEventListener('keyup', () => {
+                url.addEventListener("keyup", () => {
                     clearTimeout(typingTimer);
                     if (url.value) {
                         typingTimer = setTimeout(() => {
@@ -925,77 +1055,81 @@
                     }
                 });
 
-                color.value = getComputedStyle(document.body).getPropertyValue('--bs-primary');
+                color.value = getComputedStyle(document.body).getPropertyValue(
+                    "--bs-primary"
+                );
                 modal.show();
 
-                const addCategoryBtn = document.getElementById('modalAddCategoryBtn');
+                const addCategoryBtn = document.getElementById("modalAddCategoryBtn");
                 function addCat() {
-
-                    const name = document.querySelector('#modalAddCategory input')
-                    const memberCard = document.querySelector('#modalAddCategory input[placeholder="Member Card"]')
+                    const name = document.querySelector("#modalAddCategory input");
+                    const memberCard = document.querySelector(
+                        '#modalAddCategory input[placeholder="Member Card"]'
+                    );
 
                     if (!name.value) {
-                        name.classList.add('is-invalid');
+                        name.classList.add("is-invalid");
                         return;
-                    } else name.classList.remove('is-invalid');
+                    } else name.classList.remove("is-invalid");
                     const newCategory = {
                         name: name.value,
                         url: url.value,
                         color: color.value,
                         expenses: [],
-                        memberCard: memberCard.value
+                        memberCard: memberCard.value,
                     };
 
                     categories.push(newCategory);
-                    localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
-
+                    localStorage.setItem(
+                        "expenses",
+                        JSON.stringify(categories.filter((cat) => cat.name !== "all"))
+                    );
 
                     updateAllCat();
                     updateCurrentCategory(newCategory.name);
 
-
-                    name.value = '';
-                    url.value = '';
-                    memberCard.value = '';
+                    name.value = "";
+                    url.value = "";
+                    memberCard.value = "";
                     modal.hide();
                 }
-                addCategoryBtn.addEventListener('click', addCat);
+                addCategoryBtn.addEventListener("click", addCat);
 
-                document.getElementById('modalAddCategory').addEventListener('hide.bs.modal', () => {
-                    addCategoryBtn.removeEventListener('click', addCat);
-                });
-
-
+                document
+                    .getElementById("modalAddCategory")
+                    .addEventListener("hide.bs.modal", () => {
+                        addCategoryBtn.removeEventListener("click", addCat);
+                    });
             });
 
-            const savedTheme = localStorage.getItem('theme');
+            const savedTheme = localStorage.getItem("theme");
             changeTheme(savedTheme);
 
-            document.getElementById('themeChangeBtn').addEventListener('click', () => {
-                changeTheme();
-                displayCategories();
-            });
+            document
+                .getElementById("themeChangeBtn")
+                .addEventListener("click", () => {
+                    changeTheme();
+                    displayCategories();
+                });
 
-            document.querySelectorAll('.chartTime').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            document.querySelectorAll(".chartTime").forEach((btn) => {
+                btn.addEventListener("click", (e) => {
                     e.preventDefault();
                     chartTime = btn.innerText;
-                    document.getElementById('dateDropdown').innerText = chartTime;
+                    document.getElementById("dateDropdown").innerText = chartTime;
                     drawChart();
                 });
             });
 
-
             resizeCanvas();
-            
         });
 
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             resizeCanvas();
         });
         function resizeCanvas() {
-            const container = document.getElementById('canvas-container');
-            const canvas = document.getElementById('chart');
+            const container = document.getElementById("canvas-container");
+            const canvas = document.getElementById("chart");
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
 
@@ -1003,7 +1137,6 @@
                 myChart.resize();
             }
         }
-
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
     <script
@@ -1012,5 +1145,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
+</body>
 
 </html>
