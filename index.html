@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .sidebar {
             display: flex;
@@ -35,6 +36,14 @@
 
         }
 
+        .nav-link {
+            cursor: pointer;
+        }
+
+        .editIco {
+           cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 position: absolute;
@@ -53,6 +62,7 @@
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -68,7 +78,7 @@
                 Categories
                 <button id="add-category" class="btn btn-success btn-sm"><i class="bi bi-plus-lg"></i></button>
             </div>
-            <ul class="nav nav-pills flex-column" id="categories">
+            <ul class="nav nav-pills flex-column my-3" id="categories">
 
             </ul>
             <!-- Footer -->
@@ -87,16 +97,31 @@
 
         <!-- Page Content -->
         <div class="container mt-5">
-            <h1 class="text-center mb-4">Expense Dashboard</h1>
+
+       
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="text-center mb-4 flex-grow-1">Expense Dashboard</h1>
+                <button type="button" id="barcodeBtn" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalBarcode">
+                    <i class="bi bi-upc"></i>
+                </button>
+            </div>
+            
+          
+            
+
             <form id="expense-form" class="row g-3 mb-4" hidden>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <input type="text" class="form-control" id="expense-name" placeholder="Expense Name" required>
                 </div>
-                <div class="col-md-2">
-                    <input type="number" step="0.01" class="form-control" id="expense-amount" placeholder="Amount" required>
+                <div class="col-sm-2">
+                    <input type="number" step="0.01" class="form-control" id="expense-amount" placeholder="Amount"
+                        required>
                 </div>
                 <div class="col-md-2">
                     <input type="date" class="form-control" id="expense-date" required>
+                </div>
+                <div class="col-sm-1">
+                    <input type="color" class="form-control h-100" id="expense-color" value="#007bff">
                 </div>
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-success w-100">Add</button>
@@ -121,12 +146,32 @@
             <div id="total-expense" class="text-end mt-4">
                 <h2>Total: €<span id="total-amount">0</span></h2>
             </div>
-            <div class="text-center">
-                <img id="barcode" alt="barcode" hidden>
+            <div id="canvas-container" style="position: relative; height: 100%; width: 100%;">
+                <canvas id="chart"></canvas>
             </div>
+
         </div>
     </div>
 
+
+    <!-- Barcode modal -->
+    <div class="modal fade" id="modalBarcode" tabindex="-1" aria-labelledby="modalBarcode" aria-hidden="true"
+        aria-modal="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalBarcodeTitle">Member Card</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="barcode" alt="80000532" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!--add category modal-->
@@ -196,6 +241,11 @@
     </div>
 
     <script>
+   const ctx = document.getElementById('chart').getContext('2d');
+
+        var myChart = new Chart(ctx, {});
+        
+
         function changeTheme(theme) {
             var itemTheme = document.getElementById("itemTheme")
             if (!theme) {
@@ -299,8 +349,37 @@
 
             function updateTotal() {
                 totalAmountSpan.innerText = totalAmount.toFixed(2);
-                                
             }
+
+            
+            function drawChart() {
+                    const data = {
+                        labels: categories.filter(cat => cat.name !== "all").map(cat => cat.name),
+                        datasets: [{
+                            label: 'Expenses',
+                            data: categories.filter(cat => cat.name !== "all").map(cat => cat.expenses.reduce((acc, exp) => acc + exp.amount, 0)),
+                            backgroundColor: categories.filter(cat => cat.name !== "all").map(cat => getComputedStyle(document.body).getPropertyValue(`--bs-${cat.name}-bg`)),
+                            borderColor: categories.filter(cat => cat.name !== "all").map(cat => getComputedStyle(document.body).getPropertyValue(`--bs-${cat.name}-border`)),
+                            borderWidth: 1
+                        }]
+                    };
+
+                    const config = {
+                        type: 'bar',
+                        data: data,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    };
+
+                    myChart.destroy();
+                    myChart = new Chart(ctx, config);
+                    resizeCanvas();
+                }
 
 
 
@@ -312,7 +391,7 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${exp.name}</td>
-                        <td>${exp.amount.toFixed(2)}€</td>
+                        <td><span class="badge bg-${exp.amount > 0 ? 'danger' : 'success'}">${exp.amount.toFixed(2)}</span></td>
                         <td>${exp.date}</td>
                         <td>${exp.category}</td>
                         <td>
@@ -330,7 +409,7 @@
                                     return cat;
                                     console.log(cat)
                                 });
-                    
+
                                 updateAllCat();
                                 updateCurrentCategory(currentCategory);
                                 localStorage.setItem('expenses', JSON.stringify(categories.filter(cat => cat.name !== "all")));
@@ -410,11 +489,11 @@
                     const li = document.createElement('li');
                     li.className = 'd-flex justify-content-between align-items-center nav-item ';
                     li.innerHTML = `
-                        <a class="nav-link ${cat.name == currentCategory ? 'active' : ''}"><img width="20" src="${cat.url ? getFaviconUrl(cat.url) : ''}" class="me-2">${cat.name == "all" ? "All" : cat.name}</a>`;
+                        <a class="w-100 nav-link ${cat.name == currentCategory ? 'active' : ''}"><img width="20" src="${cat.url ? getFaviconUrl(cat.url) : ''}" class="me-2">${cat.name == "all" ? "All" : cat.name}</a>`;
                     if (cat.name != "all") {
                         li.innerHTML += `
                               <span>
-                            <i class="bi bi-pencil-square text-primary me-2"></i>
+                            <i class="editIco bi bi-pencil-square text-primary mx-2"></i>
                         </span>
                         `;
                     }
@@ -487,8 +566,10 @@
                 totalAmount = 0;
                 if (!currentCat.memberCard) {
                     document.getElementById('barcode').hidden = true;
+                    document.getElementById('barcodeBtn').hidden = true;
                 } else {
                     document.getElementById('barcode').hidden = false;
+                    document.getElementById('barcodeBtn').hidden = false;
                     document.getElementById('barcode').alt = currentCat.memberCard;
                     JsBarcode("#barcode", currentCat.memberCard, {
                         background: getComputedStyle(document.body).getPropertyValue('--bs-body-bg'),
@@ -500,6 +581,7 @@
                 displayExpense();
                 updateTotal();
                 displayCategories();
+                drawChart();
 
             }
 
@@ -540,14 +622,31 @@
 
 
 
-
             });
 
             const savedTheme = localStorage.getItem('theme');
             changeTheme(savedTheme);
+
+
+                resizeCanvas();
         });
 
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            const canvas = document.getElementById('chart');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            if (myChart) {
+                myChart.resize();
+            }
+        }
+
     </script>
+ 
     <script src="https://cdn.jsdelivr.net/jsbarcode/3.3.3/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
