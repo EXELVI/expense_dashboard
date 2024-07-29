@@ -84,12 +84,12 @@
             <!-- Footer -->
             <hr>
             <div class="dropdown mt-auto">
-                <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+                <button class="btn btn-secondary dropdown-toggle w-100 me-5" type="button" id="dropdownMenuButton"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown Menu
+                    All Settings
                 </button>
                 <ul class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-                    <li><button class="dropdown-item d-flex gap-2 align-items-center" onclick="changeTheme()"><i
+                    <li><button class="dropdown-item d-flex gap-2 align-items-center" id="themeChangeBtn"><i
                                 id="itemTheme" class="bi bi-moon-stars-fill"></i> Change Theme</button></li>
                 </ul>
             </div>
@@ -142,10 +142,24 @@
                 </table>
 
             </div>
-            <div id="total-expense" class="text-end mt-4">
-                <h2>Total: €<span id="total-amount">0</span></h2>
+            <div class="justify-content-between d-flex mt-4">
+                <div class="dropdown mt-auto">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dateDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        This Month
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dateDropdown">
+                        <li><button class="dropdown-item chartTime">This Month</button></li>
+                        <li><button class="dropdown-item chartTime">This Year</button></li>
+                        <li><button class="dropdown-item chartTime">All Time</button>
+                    </ul>
+                </div>
+                <div id="total-expense" class="text-end mt-4">
+                    <h2>Total: €<span id="total-amount">0</span></h2>
+                </div>
             </div>
-            <div id="canvas-container" style="position: relative; height: 100%; width: 100%;">
+
+            <div id="canvas-container" style="position: relative;  width: 100%;">
                 <canvas id="chart"></canvas>
             </div>
 
@@ -258,7 +272,7 @@
 
     <script>
         const ctx = document.getElementById('chart').getContext('2d');
-
+        var chartTime = "This Month";
         var myChart = new Chart(ctx, {});
 
 
@@ -376,14 +390,38 @@
                         const data = []; // {x: date, y: amount}
                         cat.expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
                             const index = data.findIndex(d => d.x === exp.date);
-                            if (index === -1) {
-                                data.push({
-                                    x: exp.date,
-                                    y: exp.amount
-                                });
+                            if (chartTime === "This Month") {
+                                if (new Date(exp.date).getMonth() === new Date().getMonth()) {
+                                    if (index === -1) {
+                                        data.push({
+                                            x: exp.date,
+                                            y: exp.amount
+                                        });
+                                    } else {
+                                        data[index].y += exp.amount;
+                                    }
+                                }
+                            } else if (chartTime === "This Year") {
+                                if (new Date(exp.date).getFullYear() === new Date().getFullYear()) {
+                                    if (index === -1) {
+                                        data.push({
+                                            x: exp.date,
+                                            y: exp.amount
+                                        });
+                                    } else {
+                                        data[index].y += exp.amount;
+                                    }
+                                }
                             } else {
-                                data[index].y += exp.amount;
-                            }                        
+                                if (index === -1) {
+                                    data.push({
+                                        x: exp.date,
+                                        y: exp.amount
+                                    });
+                                } else {
+                                    data[index].y += exp.amount;
+                                }
+                            }
                         });
                         datasets.push({
                             label: cat.name,
@@ -395,14 +433,41 @@
                 } else {
                     const data = [];
                     categories.filter(cat => cat.name === currentCategory)[0].expenses.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(exp => {
-                        const index = labels.indexOf(exp.date);
-                        if (index === -1) {
-                            labels.push(exp.date);
-                            data.push(exp.amount);
+                        const index = data.findIndex(d => d.x === exp.date);
+                        if (chartTime === "This Month") {
+                            if (new Date(exp.date).getMonth() === new Date().getMonth()) {
+                                if (index === -1) {
+                                    data.push({
+                                        x: exp.date,
+                                        y: exp.amount
+                                    });
+                                } else {
+                                    data[index].y += exp.amount;
+                                }
+                            }
+                        } else if (chartTime === "This Year") {
+                            if (new Date(exp.date).getFullYear() === new Date().getFullYear()) {
+                                if (index === -1) {
+                                    data.push({
+                                        x: exp.date,
+                                        y: exp.amount
+                                    });
+                                } else {
+                                    data[index].y += exp.amount;
+                                }
+                            }
                         } else {
-                            data[index] += exp.amount;
+                            if (index === -1) {
+                                data.push({
+                                    x: exp.date,
+                                    y: exp.amount
+                                });
+                            } else {
+                                data[index].y += exp.amount;
+                            }
                         }
                     });
+
                     datasets.push({
                         label: currentCategory,
                         data: data,
@@ -428,15 +493,15 @@
                             }
                         },
                         interaction: {
-                            beforeTitle: "%",
-                            mode: 'index'
+                            beforeTitle: "Expenses",
+
                         },
                         responsive: true,
                         plugins: {
                             tooltip: {
                                 callbacks: {
                                     label: function (context) {
-                               
+
                                         let label = context.dataset.label || '';
 
                                         if (label) {
@@ -662,6 +727,24 @@
                 return (brightness > 125) ? 'black' : 'white';
             }
 
+            function adjustColor(hex) { //Function to adjust the color of the category based on theme, if it is too dark or too light
+                const theme = localStorage.getItem('theme');
+                const rgb = toRGB(hex);
+                const brightness = Math.round(((rgb[0] * 299) +
+                    (rgb[1] * 587) +
+                    (rgb[2] * 114)) / 1000);
+                if (theme === 'dark') {
+                    if (brightness < 60) {
+                        return '#ffffff';
+                    }
+                } else {
+                    if (brightness > 125) {
+                        return '#000000';
+                    }
+                }
+                return hex;            
+            }
+
             function displayCategories() {
                 document.getElementById('categories').innerHTML = '';
                 categories.forEach(cat => {
@@ -683,7 +766,7 @@
                         a.style.backgroundColor = color;
                         a.style.color = determineTextColor(color);
                     } else {
-                        a.style.color = color;
+                        a.style.color = adjustColor(color);
 
                     }
 
@@ -888,8 +971,23 @@
             const savedTheme = localStorage.getItem('theme');
             changeTheme(savedTheme);
 
+            document.getElementById('themeChangeBtn').addEventListener('click', () => {
+                changeTheme();
+                displayCategories();
+            });
+
+            document.querySelectorAll('.chartTime').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    chartTime = btn.innerText;
+                    document.getElementById('dateDropdown').innerText = chartTime;
+                    drawChart();
+                });
+            });
+
 
             resizeCanvas();
+            
         });
 
         window.addEventListener('resize', () => {
